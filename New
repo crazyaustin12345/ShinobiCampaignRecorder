@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shinobi Campaign Episode Recorder</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Dela+Gothic+One&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5fa;--surface:#fff;--ink:#141a2b;--muted:#5a6580;--line:#d5dbe8;--orange:#f26a0f;--blue:#1f6fd6;--chip:#e8eefb;--on-accent:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141f;--surface:#1a2133;--ink:#eef1f8;--muted:#9aa5c0;--line:#2c3550;--orange:#ff8a3d;--blue:#5aa2ff;--chip:#24304d;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141f;--surface:#1a2133;--ink:#eef1f8;--muted:#9aa5c0;--line:#2c3550;--orange:#ff8a3d;--blue:#5aa2ff;--chip:#24304d;color-scheme:dark}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Source Sans 3",system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+header{border-bottom:6px solid var(--orange);padding-bottom:14px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+h1{font:400 clamp(32px,7vw,56px)/1 Dela Gothic One,Anton,Impact,sans-serif;margin:0;letter-spacing:.01em;text-transform:uppercase}
+h1 span{color:var(--orange)}
+.sub{color:var(--muted);margin:6px 0 0}
+button{font:600 15px "Source Sans 3",sans-serif;border:2px solid var(--ink);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:6px;cursor:pointer}
+button:hover{background:var(--chip)}
+button.primary{background:var(--orange);border-color:var(--orange);color:var(--on-accent)}
+button.primary:hover{filter:brightness(1.08)}
+button.danger{border-color:#c63a3a;color:#c63a3a}
+button.small{padding:4px 10px;font-size:14px}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.tools input[type=search]{flex:1 1 220px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{resize:vertical;min-height:70px}
+.stats{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);margin:0 0 18px;font-weight:600}
+.stats b{color:var(--ink);font:400 24px Dela Gothic One,Anton,sans-serif;margin-right:4px}
+.ep{display:grid;grid-template-columns:84px 1fr;background:var(--surface);border:2px solid var(--ink);border-radius:8px;margin-bottom:16px;overflow:hidden}
+.num{background:var(--blue);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font:400 44px/1 Dela Gothic One,Anton,sans-serif;padding:10px 0}
+.num small{font:600 12px "Source Sans 3",sans-serif;opacity:.85;margin-bottom:4px}
+.body{padding:14px 16px}
+.body h2{margin:0;font:400 26px/1.15 Dela Gothic One,Anton,sans-serif;letter-spacing:.01em}
+.meta{color:var(--muted);font-size:14px;margin:4px 0 8px}
+.meta .arc{color:var(--orange);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{background:var(--chip);border-radius:99px;padding:2px 10px;font-size:14px}
+.chip.j{border:1px solid var(--blue)}
+.field{margin:10px 0 0}
+.field h3{margin:0;font-size:14px;color:var(--blue);font-weight:700}
+.field p{margin:2px 0 0;white-space:pre-wrap}
+.hook{border-left:5px solid var(--orange);padding-left:10px}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.empty{border:2px dashed var(--line);border-radius:8px;padding:34px 20px;text-align:center;color:var(--muted)}
+dialog{width:min(640px,94vw);border:3px solid var(--ink);border-radius:10px;background:var(--bg);color:var(--ink);padding:0}
+dialog::backdrop{background:rgba(8,12,24,.6)}
+form,.dlg{padding:18px}
+dialog h2{font:400 28px Dela Gothic One,Anton,sans-serif;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-weight:600;font-size:14px;margin-top:12px}
+.grid label{margin-top:0}
+label small{font-weight:400;color:var(--muted)}
+.full{grid-column:1/-1}
+.dacts{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.panel{margin-bottom:22px}.phead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.phead h2{font:400 28px Dela Gothic One,Anton,sans-serif;margin:0;text-transform:uppercase}
+.pcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.pc{background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:12px 14px}
+.pc.down{border-color:#c63a3a}
+.pch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}.pch strong{font:400 22px Dela Gothic One,Anton,sans-serif}
+.rk{background:var(--orange);color:#fff;border-radius:4px;padding:1px 8px;font-size:13px;font-weight:700}
+.mt{margin:8px 0}.mtl{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.mtl input{width:64px;padding:2px 6px;text-align:center;display:inline-block}
+.track{height:14px;background:var(--chip);border-radius:99px;overflow:hidden;margin:4px 0 6px}
+.fill{height:100%;border-radius:99px;transition:width .2s}
+.fill.hp{background:#2e9e5b}.fill.ck{background:var(--blue)}
+.adj{display:flex;gap:4px}.adj button{flex:1;padding:3px 0;font-size:14px}
+.jb{border-top:2px solid var(--line);margin-top:10px;padding-top:8px}.jh{font-weight:700;font-size:14px;color:var(--blue)}
+.jr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0}.jm{color:var(--muted);font-size:13px}.jbtn{display:flex;gap:4px}
+.roll{background:var(--chip);border-left:5px solid var(--orange);padding:6px 10px;margin:6px 0;font-weight:600;font-size:14px}
+button:disabled{opacity:.45;cursor:not-allowed}.dlg form{padding:0}
+.jlrow{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding:6px 0}.jlist{max-height:240px;overflow:auto;margin-top:8px}
+.fx{font-size:14px;margin:0 0 6px}.fx summary{cursor:pointer;color:var(--blue);font-weight:600}.fx div{margin-left:12px}
+.mv{border:2px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;background:var(--surface)}.mcost{display:block;padding:8px 0;color:var(--muted)}
+details.imp{margin-top:8px}details.imp summary{cursor:pointer;font-weight:600;color:var(--blue)}
+.pc .acts{margin-top:10px}.note{color:var(--muted);font-size:14px;margin:0}.downtag{color:#c63a3a;font-weight:700;font-size:14px}
+@media(max-width:560px){.ep{grid-template-columns:56px 1fr}.num{font-size:30px}.grid{grid-template-columns:1fr}}
+.hidden{display:none!important}.phead{flex-wrap:wrap}
+.tabs{display:flex;gap:6px}.tabs button[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.pbtns{display:flex;gap:8px;flex-wrap:wrap}
+.av{width:56px;height:56px;border-radius:8px;object-fit:cover;border:2px solid var(--ink);flex:none;background:var(--chip);display:block}
+.av.ini{display:flex;align-items:center;justify-content:center;font:400 28px Dela Gothic One,Anton,sans-serif;color:var(--blue)}
+.av.big{width:96px;height:96px}.who{display:flex;gap:10px;align-items:center;min-width:0}
+.pic{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.kwrow{display:flex;flex-wrap:wrap;gap:6px}.kw{border-radius:99px;padding:2px 10px;font-size:14px;border:2px solid var(--line)}
+.kw.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.sr{display:flex;gap:6px}.sr select{flex:1}.lbl{font-weight:600;font-size:14px;margin-bottom:4px}
+#cmsg{min-height:22px;margin:0 0 8px;color:var(--blue);font-weight:600}
+.av{width:104px;height:104px}.av.ini{font-size:52px}.av.big{width:160px;height:160px}.av.big.ini{font-size:80px}
+.pch strong{font:400 17px/1.15 Dela Gothic One,Anton,sans-serif;letter-spacing:.01em}
+.who{align-items:flex-start;gap:12px}.wi{display:flex;flex-direction:column;gap:4px;align-items:flex-start;min-width:0;padding-top:2px}
+.vn{color:var(--muted);font-size:14px;font-weight:600;line-height:1.25}
+.rk.npc{background:var(--blue)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:26px}
+.vc{background:var(--surface);border:2px solid var(--ink);border-top:6px solid var(--orange);border-radius:8px;padding:12px 14px}
+.vh{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.vh strong{font:400 18px/1.15 Dela Gothic One,Anton,sans-serif}
+.ryo{font:400 40px/1.1 Dela Gothic One,Anton,sans-serif;margin:8px 0}.ryo small{font:600 14px "Source Sans 3",sans-serif;color:var(--muted)}
+.vin{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}.vin label{margin-top:0}
+.vc .acts{margin-top:10px}#vmsg{min-height:22px;margin:0 0 8px;color:var(--blue);font-weight:600}
+#vfil{width:auto}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.nav button[aria-selected=true]{background:var(--orange);border-color:var(--orange);color:#fff}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}.ctl select{width:auto;max-width:100%;flex:1 1 200px}
+label.inl{display:inline-flex;align-items:center;gap:6px;margin:0;font-weight:600}label.inl input[type=text]{width:90px}
+.av.sm{width:40px;height:40px;border-radius:50%}.av.sm.ini{font-size:20px}
+.mapwrap{height:72vh;min-height:360px;overflow:auto;border:2px solid var(--ink);border-radius:8px;background:#2f78b7}.mapwrap svg{display:block}
+.tok{cursor:grab;touch-action:none}.tok:active{cursor:grabbing}
+.trow{display:flex;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px}.tin{flex:1;min-width:0}
+#mmsg{min-height:22px;margin:0 0 8px;color:var(--blue);font-weight:600}
+.kwr{display:grid;grid-template-columns:1.2fr 1fr 1.6fr auto;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.kwr input,.kwr select{margin:0}
+@media(max-width:560px){.kwr{grid-template-columns:1fr 1fr}}
+.pc.dying{border-color:#e11d1d;background:linear-gradient(180deg,rgba(225,29,29,.16),transparent 45%),var(--surface);animation:dsspulse 1.2s ease-in-out infinite}
+@keyframes dsspulse{0%,100%{box-shadow:0 0 0 0 rgba(225,29,29,.55),0 0 16px rgba(225,29,29,.35)}50%{box-shadow:0 0 0 6px rgba(225,29,29,0),0 0 34px rgba(225,29,29,.75)}}
+.pc.stable{border-color:#2e9e5b}.pc.dead{border-color:#777;filter:grayscale(.85)}
+.dss{margin:10px 0;border-radius:6px;padding:10px;background:#3a0b0b;color:#ffecec;border:2px solid #e11d1d;text-align:center}
+.dss h4{margin:0;font:400 24px Dela Gothic One,Anton,sans-serif;letter-spacing:.1em;animation:dssblink 1s steps(2,jump-none) infinite}
+@keyframes dssblink{50%{opacity:.4}}
+.dss p{margin:6px 0;font-size:14px}.dss.stable{background:#0e2e1b;border-color:#3ecf6e;color:#e6ffee}.dss.stable h4,.dss.dead h4{animation:none}.dss.dead{background:#151515;border-color:#777;color:#ccc}
+.pips{display:flex;gap:8px;justify-content:center;align-items:center;margin:6px 0}.pips small{width:70px;text-align:right}
+.pip{width:22px;height:22px;border-radius:50%;border:2px solid #ffb3b3;display:inline-block}.pip.ok{background:#3ecf6e;border-color:#3ecf6e}.pip.bad{background:#e11d1d;border-color:#ff8a8a}
+.pc.act{box-shadow:0 0 0 4px var(--orange)}.pc.idle{opacity:.72}
+.phtag{background:var(--orange);color:#fff;font-weight:700;font-size:13px;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:8px}
+.phasebar{background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:10px 12px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.phr{font:400 26px Dela Gothic One,Anton,sans-serif}.phcur{flex:1 1 240px}.phrow{display:flex;gap:6px;flex-wrap:wrap}
+.php{border:2px solid var(--line);border-radius:99px;padding:2px 12px;font-weight:700;font-size:14px;color:var(--muted)}.php.on{background:var(--orange);border-color:var(--orange);color:#fff}.php.done{text-decoration:line-through;opacity:.6}
+@media (prefers-reduced-motion:reduce){.pc.dying,.dss h4{animation:none}}
+body{font-size:17px}
+.vwrap.max{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding:24px}
+.vwrap.max .vc{max-width:780px;margin:0 auto}.vwrap.max .ryo{font-size:96px}.vwrap.max .vh strong{font-size:36px}.vwrap.max .vclose{display:block;margin:0 auto 14px}
+#villages .vc{max-width:600px}.vclose{display:none}
+.mpill{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;margin:0 8px 8px 0;text-align:left}
+.mpill.on{background:var(--ink);color:var(--bg)}.mpill.on .jm{color:var(--bg)}
+.mhead h3{margin:0;font:400 30px Dela Gothic One,Anton,sans-serif}.mrank{font-weight:700;color:var(--orange)}
+.mfacts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.tm{font-weight:700}.tm.ok{color:#2e9e5b}.tm.bad{color:#c63a3a}
+#epws .panel{background:var(--surface);border:2px solid var(--line);border-radius:8px;padding:14px;margin-bottom:16px}
+.hist h4{margin:14px 0 4px;font:400 20px Dela Gothic One,Anton,sans-serif;letter-spacing:.02em}
+.he{border-left:4px solid var(--line);padding:3px 0 3px 10px;margin:5px 0}.he.jutsu{border-color:var(--orange)}.he.hp{border-color:#e11d1d}.he.sys{border-color:var(--blue);color:var(--muted)}
+#wrapup{border-color:var(--orange)!important}#wrapup textarea{min-height:90px}
+.phcur .jm b{color:var(--ink)}
+.strow{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.st{border-radius:99px;padding:1px 12px;font-size:14px;font-weight:600;border:2px solid var(--line);background:transparent;color:var(--muted)}
+.st.on{color:#fff;border-color:transparent}
+summary.jh{cursor:pointer;font-size:16px;padding:4px 0}
+.hsum{width:100%;border-collapse:collapse;margin:6px 0 10px;font-size:15px}.hsum th,.hsum td{border-bottom:1px solid var(--line);padding:4px 8px;text-align:left}.hsum th{color:var(--muted);font-size:13px}
+.ult{background:#3a0b0b;color:#ffecec;border:2px solid #e11d1d;border-radius:8px;padding:10px 12px;margin:10px 0}.ult .inl{color:#ffecec}
+.adj{flex-wrap:wrap}.adj button{flex:1 1 auto}#duel{width:min(1000px,97vw)}
+.duelrow{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin:12px 0}
+.fighter{background:var(--surface);border:3px solid var(--ink);border-radius:12px;padding:14px;text-align:center}
+.fighter.atk{border-color:var(--orange)}.fighter.def{border-color:var(--blue)}
+.fighter .av{margin:0 auto 8px}.fighter .mtl{text-align:left}
+.av.huge{width:190px;height:190px;border-radius:12px}.av.huge.ini{font-size:96px}
+.vs{font:400 56px Dela Gothic One,Anton,sans-serif;color:var(--orange);text-align:center}
+.diceset{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.diceset input{width:64px;text-align:center;font-size:22px;padding:6px 2px}
+.dcol{background:var(--surface);border:2px solid var(--line);border-radius:10px;padding:12px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.calc{background:var(--surface);border:2px solid var(--orange);border-radius:10px;padding:12px;margin:12px 0;font-size:20px}
+.calc p{margin:6px 0;font-size:15px}
+@media(max-width:700px){.duelrow,.dgrid{grid-template-columns:1fr}.av.huge{width:130px;height:130px}}
+.kit{text-align:left;margin-top:10px}.kit h4{margin:0 0 6px;font:400 20px Dela Gothic One,Anton,sans-serif}
+.kitm{border:2px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;background:var(--surface)}
+.kitm.sel{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue)}
+.kh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}.kh b{font-size:17px}
+.kfx{margin:4px 0;font-size:15px}.kitm i{font-size:14px;color:var(--muted)}
+.dtot{font-size:26px;text-align:center;max-width:160px}
+.vov{margin-top:12px;border-top:2px solid var(--line);padding-top:8px}
+.vstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.vs1{background:var(--chip);border-radius:8px;padding:8px;text-align:center}.vs1 b{display:block;font:400 30px/1.1 Dela Gothic One,Anton,sans-serif}.vs1 span{font-size:13px;color:var(--muted)}
+.kage{display:flex;gap:12px;align-items:center;margin:8px 0}.kage .av{width:84px;height:84px;flex:none}.kage .wi{flex:1;min-width:0}
+.vwrap.max .vs1 b{font-size:52px}.vwrap.max .vs1 span{font-size:16px}.vwrap.max .kage .av{width:120px;height:120px}
+@media(max-width:560px){.vstats{grid-template-columns:1fr}}
+/* shinobi theme */
+:root{--bg:#ede3cc;--surface:#faf3e2;--ink:#16110d;--muted:#66594a;--line:#cbbd9a;--orange:#c23b22;--blue:#27478a;--chip:#e7dbbc;color-scheme:light}
+body{background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20' viewBox='0 0 40 20'%3E%3Cg fill='none' stroke='%23000' stroke-opacity='.07'%3E%3Ccircle cx='20' cy='20' r='19'/%3E%3Ccircle cx='20' cy='20' r='13'/%3E%3Ccircle cx='20' cy='20' r='7'/%3E%3Ccircle cx='0' cy='10' r='19'/%3E%3Ccircle cx='0' cy='10' r='13'/%3E%3Ccircle cx='0' cy='10' r='7'/%3E%3Ccircle cx='40' cy='10' r='19'/%3E%3Ccircle cx='40' cy='10' r='13'/%3E%3Ccircle cx='40' cy='10' r='7'/%3E%3C/g%3E%3C/svg%3E")}
+@media (prefers-color-scheme:dark){
+:root:not([data-theme="light"]){--bg:#0c0f16;--surface:#151a26;--ink:#ece6d6;--muted:#9aa0b3;--line:#2a3246;--orange:#ff6a3d;--blue:#6e9bff;--chip:#202a3f;color-scheme:dark}
+:root:not([data-theme="light"]) body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20' viewBox='0 0 40 20'%3E%3Cg fill='none' stroke='%23fff' stroke-opacity='.05'%3E%3Ccircle cx='20' cy='20' r='19'/%3E%3Ccircle cx='20' cy='20' r='13'/%3E%3Ccircle cx='20' cy='20' r='7'/%3E%3Ccircle cx='0' cy='10' r='19'/%3E%3Ccircle cx='0' cy='10' r='13'/%3E%3Ccircle cx='0' cy='10' r='7'/%3E%3Ccircle cx='40' cy='10' r='19'/%3E%3Ccircle cx='40' cy='10' r='13'/%3E%3Ccircle cx='40' cy='10' r='7'/%3E%3C/g%3E%3C/svg%3E")}
+}
+header{background:#15110e;color:#f3ead4;padding:16px 18px;border-radius:10px;border-bottom:5px solid var(--orange);position:relative;overflow:hidden}
+header:after{content:"";position:absolute;right:-30px;top:-30px;width:150px;height:150px;opacity:.12;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ffffff' fill-rule='evenodd' d='M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39Z M50 40a10 10 0 1 0 .01 0Z'/%3E%3C/svg%3E") center/contain no-repeat;pointer-events:none}
+header h1{color:#f3ead4}header .sub{color:#cdbf9f}
+.phead h2:before,#epwt:before{content:"";display:inline-block;width:.8em;height:.8em;margin-right:.45em;vertical-align:-.05em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23c23b22' fill-rule='evenodd' d='M50 2 L61 39 L98 50 L61 61 L50 98 L39 61 L2 50 L39 39Z M50 40a10 10 0 1 0 .01 0Z'/%3E%3C/svg%3E") center/contain no-repeat}
+.nav button{font-family:Dela Gothic One,Anton,sans-serif;font-size:14px;letter-spacing:.02em}
+.ttabs{display:flex;gap:8px;flex-wrap:wrap}
+.ttab{font-family:Dela Gothic One,Anton,sans-serif;font-size:15px;padding:8px 16px;border-radius:6px 6px 0 0;border-bottom-width:4px}
+.ttab.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.ep{grid-template-columns:180px 1fr}
+.epimg{position:relative;min-height:230px;background:var(--ink)}
+.epimg img,.epimg svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.epbadge{position:absolute;left:8px;top:8px;background:var(--orange);color:#fff;font:400 18px Dela Gothic One,Anton,sans-serif;padding:3px 12px;border-radius:4px;box-shadow:0 2px 6px #0007}
+.epwart{position:relative;width:92px;height:116px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;flex:none;background:var(--ink)}
+.epwart img,.epwart svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.epwart .epbadge{font-size:13px;padding:1px 8px;left:5px;top:5px}
+@media(max-width:560px){.ep{grid-template-columns:104px 1fr}.epimg{min-height:170px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>Shinobi <span>Chronicle</span></h1><p class="sub">Scrolls of every mission, battle and legend in your Ultimate Ninja Storm campaign.</p></div>
+  <button class="primary" id="new">Inscribe new episode</button>
+</header>
+<nav class="nav" aria-label="Sections"><button data-view="camp" aria-selected="true">Villages &amp; Shinobi</button><button data-view="map" aria-selected="false">World Map</button><button data-view="eps" aria-selected="false">Episode Scrolls</button></nav>
+<div id="v-camp">
+<section class="panel" aria-label="Villages">
+  <div class="phead"><h2>Hidden Villages</h2><div class="pbtns"><select id="vsel" aria-label="Choose a village" style="width:auto"></select><button id="vmax">Maximize</button><button id="newv">Add village</button></div></div>
+  <p id="vmsg" role="status"></p>
+  <div class="vwrap" id="vwrap"><button class="small vclose" id="vclose">Close full screen</button><div id="villages"></div></div>
+</section>
+<section class="panel" aria-label="Characters">
+  <div class="phead"><h2>Shinobi Roster (<span id="cros">0</span>)</h2></div>
+  <div class="ctl" id="ctl-r"><select id="vfil" aria-label="Filter characters by village"></select><select id="rpick" aria-label="Jump to a character"></select><button class="primary" id="newc">Add shinobi</button></div>
+  <p id="cmsg" role="status"></p>
+  <div class="pcs" id="chars"></div>
+</section>
+</div>
+<div id="v-eps" class="hidden">
+<div id="epws" class="hidden">
+  <div class="phead"><button class="small" id="epback">&larr; Episode scrolls</button><div class="epwart" id="epwart"></div><h2 id="epwt">Episode</h2><button class="small" id="epwpick">Change image</button><input type="file" id="epwimg" accept="image/*" hidden><label class="inl">Death save succeeds on a D10 roll of <input id="dsst" type="number" min="1" max="10" style="width:64px">+</label></div>
+  <div id="phasebar" class="phasebar hidden"></div>
+  <p id="emsg" role="status" style="min-height:22px;margin:0 0 8px;color:var(--blue);font-weight:600"></p>
+  <section class="panel hidden" id="wrapup" aria-label="Episode wrap-up"></section>
+<section class="panel hidden" id="encpanel" aria-label="Encounter">
+    <h3 style="margin:0 0 6px">Encounter</h3>
+    <p class="note">The villain does not craft a mission. Instead the Akatsuki move around the map at random. Any Akatsuki member who ends up near deployed shinobi starts a fight with them, and that fight appears below as an encounter you can play out.</p>
+    <div class="ctl"><button class="primary" id="enc">Trigger encounter</button><label class="inl">Encounter range <input id="erange" type="number" min="1" max="10" style="width:64px"> squares</label></div>
+  </section>
+  <section class="panel" id="mpanel" aria-label="Missions in this episode">
+    <h3 style="margin:0 0 8px">Mission scrolls</h3>
+    <div id="mlist"></div>
+    <details class="imp" id="mcreate" open><summary>Draft a mission scroll</summary>
+      <div class="grid" style="margin-top:8px">
+        <label class="full">Mission rank<select id="mrank"><option value="C">C-Rank: Routine Assignment (Threat level 4, 200 Ryo)</option><option value="B">B-Rank: Dangerous Assignment (Threat level 5, 300 Ryo)</option><option value="A">A-Rank: High Priority (Threat level 7, 400 Ryo)</option><option value="S">S-Rank: Critical Assignment (Threat level 11, 500 Ryo)</option></select></label>
+        <label class="full">Mission title <small>(optional)</small><input id="mname" type="text"></label><label class="full">Arc name <small>(so you know which arc to resume on your next episode)</small><input id="marc" type="text"></label>
+      </div>
+      <p class="note" id="mrinfo"></p>
+      <p class="note">Villain shinobi are worth Genin 1, Chunin 2, Jonin 3, Kage 4. The villains you deploy must add up to the mission&rsquo;s threat level.</p>
+      <button class="primary" id="mmake">Create mission</button>
+    </details>
+  </section>
+  <section class="panel" id="mdetail" aria-label="Selected mission"></section>
+</div>
+<div id="eplist">
+<div class="stats" id="stats"></div>
+<div class="tools">
+  <input type="search" id="q" placeholder="Search episodes, characters, jutsu, arcs" aria-label="Search episodes">
+  <button id="order">Newest first</button>
+  <button id="backup">Backup / restore</button>
+</div>
+<div id="list"></div>
+</div></div>
+<div id="v-map" class="hidden">
+<section class="panel" aria-label="Map">
+  <div class="phead"><h2>Ninja map</h2><div class="pbtns"><span class="rk" id="turnlbl">Turn 1</span><button class="primary" id="nextturn">Next turn</button><button id="rollall">Roll movement for all</button></div></div>
+  <div class="ctl"><select id="tpick" aria-label="Choose a character to place on the map"></select><button id="tadd">Place token</button></div>
+  <div class="ctl">
+    <label class="inl">Movement dice <input id="mdice" type="text"></label>
+    <label class="inl"><input type="checkbox" id="menf" style="width:auto"> Limit moves to the rolled distance</label>
+    <label class="inl"><input type="checkbox" id="mgrid" style="width:auto"> Grid</label>
+    <span class="pbtns"><button id="zout" aria-label="Zoom out">&minus;</button><button id="zin" aria-label="Zoom in">+</button></span>
+  </div>
+  <p id="mmsg" role="status"></p>
+  <div class="mapwrap" id="mapwrap">
+    <svg id="map" viewBox="0 0 2000 1400" role="img" aria-label="Ninja world map with character tokens">
+      <defs><clipPath id="tc"><circle r="23"/></clipPath></defs>
+      <g id="mstatic"></g><path id="mgridl" fill="none" stroke="#fff" stroke-opacity=".22" stroke-width="1"/><g id="mvill"></g><g id="mtok"></g>
+    </svg>
+  </div>
+  <div id="toklist"></div>
+</section>
+</div>
+</div>
+
+<dialog id="dlg"><form id="f" method="dialog">
+  <h2 id="dt">Record episode</h2>
+  <div class="pic"><div id="epprev"></div><div>
+    <button type="button" class="small" id="epickbtn">Choose image</button> <button type="button" class="small" id="epunpick">Remove image</button>
+    <input type="file" id="epimg" accept="image/*" hidden>
+    <p class="note" id="epimsg" role="status">Choose an image, drag one onto this window, or copy an image and paste it here with Ctrl+V.</p></div></div>
+  <div class="grid">
+    <label>Episode number<input type="number" id="num" min="1" required></label>
+    <label>Session date<input type="date" id="date"></label>
+    <label class="full">Episode title<input id="title" required></label>
+    <label>Story arc<input id="arc"></label>
+    <label>Mission rank
+      <select id="rank"><option value="">None</option><option>D-Rank</option><option>C-Rank</option><option>B-Rank</option><option>A-Rank</option><option>S-Rank</option><option>Exam / Tournament</option><option>Story event</option></select></label>
+  </div>
+  <label>What happened<textarea id="summary" rows="4"></textarea></label>
+  <label>Characters present <small>(comma separated)</small><input id="cast"></label>
+  <label>Jutsu and techniques used <small>(comma separated)</small><input id="jutsu"></label>
+  <label>Battles and outcomes<textarea id="battles" rows="3"></textarea></label>
+  <label>Rewards, ryo, XP, items<textarea id="rewards" rows="2"></textarea></label>
+  <label>Cliffhanger or next-session hook<textarea id="hook" rows="2"></textarea></label>
+  <div class="dacts"><button type="button" id="cancel">Cancel</button><button class="primary" id="save" type="submit">Save episode</button></div>
+</form></dialog>
+
+<dialog id="cd"><form id="cf" method="dialog">
+  <h2 id="cdt">Add character</h2>
+  <p class="note hidden" id="cmnote">This is a mission copy. Changes here only affect this mission, not the character in All characters.</p>
+  <div class="pic"><div id="cprev"></div><div>
+    <button type="button" class="small" id="cpick">Choose image</button> <button type="button" class="small" id="cunpick">Remove image</button>
+    <input type="file" id="cimg" accept="image/*" hidden>
+    <p class="note" id="cimsg" role="status">Choose an image, drag one onto this window, or copy an image and paste it here with Ctrl+V. It is resized and saved in this browser.</p></div></div>
+  <div class="grid">
+    <label class="full">Name<input id="cname" required></label>
+    <label class="full">Village<select id="cvil"></select></label>
+    <label class="full">Rank
+      <select id="crank"><option value="Genin">Genin (50 HP, 100 Chakra)</option><option value="Chunin">Chunin (60 HP, 120 Chakra)</option><option value="Jonin">Jonin (70 HP, 140 Chakra)</option><option value="Kage">Kage (80 HP, 160 Chakra)</option></select></label>
+    <label>Max HP<input type="number" id="cmaxhp" min="1" required></label>
+    <label>Max Chakra<input type="number" id="cmaxck" min="1" required></label>
+  </div>
+  <p class="note" style="margin-top:10px">Max values fill in from the rank. Change them for bonuses or penalties.</p>
+  <div class="phead" style="margin:16px 0 6px"><h3 style="margin:0;font-size:18px">Moveset</h3><button type="button" class="small" id="addmv">Add jutsu</button></div>
+  <p class="note">Offense: 50 Chakra and 5d12. Defense: 50 Chakra and 4d12. Supplementary and Awakening: 30 Chakra. Start an effect line with a number and a plus, like 35+, and it only triggers when the damage roll reaches that total. Offense and Defense jutsu have a base keyword plus a second keyword that unlocks at 35+ (Offense) or 30+ (Defense). Supplementary jutsu have two keywords that both apply. Awakening jutsu have a single keyword.</p>
+  <details class="imp"><summary>Saved keywords</summary>
+    <div class="grid" style="margin-top:8px"><label>Keyword<input id="kwname"></label><label>Category<select id="kwcat"><option>Offense</option><option>Defense</option><option>Supplementary</option><option>Awakening</option></select></label><label class="full">What it does <small>(optional)</small><input id="kwdesc"></label></div>
+    <div style="margin:8px 0"><button type="button" class="small" id="kwadd">Save keyword</button></div>
+    <p class="note" id="kwmsg" role="status"></p><div id="kwl"></div></details>
+  <div id="mvrows" style="margin-top:10px"></div>
+  <details class="imp"><summary>Paste jutsu from your list</summary>
+    <textarea id="mvbulk" rows="7"></textarea>
+    <p class="note">First line: name | category | keywords (category and keywords are optional). List the base keyword first, then the second keyword, separated by a comma. The next lines are the effects. Leave a blank line between jutsu. New keywords are saved under that jutsu&rsquo;s category.</p>
+    <button type="button" class="small" id="mvimp">Add pasted jutsu</button> <span id="mvmsg" class="note" role="status"></span></details>
+  <div class="dacts"><button type="button" id="ccancel">Cancel</button><button class="primary" type="submit">Save character</button></div>
+</form></dialog>
+
+<dialog id="duel"><div class="dlg" id="duelbody"></div></dialog>
+
+<dialog id="vd"><form id="vf" method="dialog">
+  <h2 id="vdt">Add village</h2>
+  <div class="grid">
+    <label class="full">Village name<input id="vname" required></label>
+    <label>Controlled by<input id="vown"></label>
+    <label>Ryo balance<input type="number" id="vryo" min="0"></label>
+  </div>
+  <p class="note" style="margin-top:10px">Use NPC as the controller for villages you run yourself.</p>
+  <div class="dacts"><button type="button" id="vcancel">Cancel</button><button class="primary" type="submit">Save village</button></div>
+</form></dialog>
+
+<dialog id="bk"><div class="dlg">
+  <h2>Backup / restore</h2>
+  <p>Episodes are saved in this browser only. Copy this text somewhere safe to back up. To restore, paste a backup and select Load backup.</p>
+  <textarea id="bkt" rows="10" aria-label="Backup data"></textarea>
+  <p id="bkmsg" class="sub" role="status"></p>
+  <div class="dacts"><button id="bkclose">Close</button><button class="primary" id="bkload">Load backup</button></div>
+</div></dialog>
+
+<script>
+(function(){
+var KEY="shinobi-episodes-v1",eps=[],newest=true,editId=null;
+var $=function(i){return document.getElementById(i)};
+function load(){try{var r=localStorage.getItem(KEY);eps=r?JSON.parse(r):[];if(!Array.isArray(eps))eps=[]}catch(e){eps=[]}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(eps))}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function split(s){return (s||"").split(",").map(function(x){return x.trim()}).filter(Boolean)}
+function fmt(d){if(!d)return"";var p=d.split("-");if(p.length<3)return d;return new Date(p[0],p[1]-1,p[2]).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}
+function field(t,v,c){return v?'<div class="field '+(c||"")+'"><h3>'+t+'</h3><p>'+esc(v)+'</p></div>':""}
+function render(){
+  var q=$("q").value.trim().toLowerCase();
+  var rows=eps.slice().sort(function(a,b){return newest?b.num-a.num:a.num-b.num});
+  if(q)rows=rows.filter(function(e){return JSON.stringify(e).toLowerCase().indexOf(q)>-1});
+  var chars={},jut={};eps.forEach(function(e){split(e.cast).forEach(function(c){chars[c.toLowerCase()]=1});split(e.jutsu).forEach(function(c){jut[c.toLowerCase()]=1})});
+  $("stats").innerHTML='<span><b>'+eps.length+'</b>episodes</span><span><b>'+Object.keys(chars).length+'</b>characters</span><span><b>'+Object.keys(jut).length+'</b>techniques</span>';
+  if(!rows.length){$("list").innerHTML='<div class="empty">'+(eps.length?"No episodes match your search.":"No episodes yet. Select Record new episode to log your first session.")+'</div>';return}
+  $("list").innerHTML=rows.map(function(e){
+    var meta=[e.arc?'<span class="arc">'+esc(e.arc)+'</span>':"",esc(e.rank),esc(fmt(e.date))].filter(Boolean).join(" | ");
+    return '<article class="ep"><div class="epimg">'+epArt(e)+'</div><div class="body"><h2>'+esc(e.title)+'</h2><div class="meta">'+meta+'</div>'+epMissions(e.num)
+    +(e.summary?'<p style="margin:0;white-space:pre-wrap">'+esc(e.summary)+'</p>':"")
+    +(split(e.cast).length?'<div class="chips">'+split(e.cast).map(function(c){return'<span class="chip">'+esc(c)+'</span>'}).join("")+'</div>':"")
+    +(split(e.jutsu).length?'<div class="chips">'+split(e.jutsu).map(function(c){return'<span class="chip j">'+esc(c)+'</span>'}).join("")+'</div>':"")
+    +field("Battles",e.battles)+field("Rewards",e.rewards)+field("Next time",e.hook,"hook")
+    +'<div class="acts"><button class="small primary" data-a="open" data-id="'+e.id+'">Open turns &amp; missions</button><button class="small" data-a="edit" data-id="'+e.id+'">Edit</button><button class="small" data-a="copy" data-id="'+e.id+'">Copy recap</button><button class="small danger" data-a="del" data-id="'+e.id+'">Delete</button></div></div></article>'}).join("");
+}
+var ids=["num","date","title","arc","rank","summary","cast","jutsu","battles","rewards","hook"];
+function openForm(e){
+  editId=e?e.id:null;$("dt").textContent=e?"Edit episode":"Record episode";
+  ids.forEach(function(k){$(k).value=e&&e[k]!=null?e[k]:""});
+  if(!e){var mx=eps.reduce(function(m,x){return Math.max(m,x.num)},0);$("num").value=mx+1;$("date").value=new Date().toISOString().slice(0,10)}
+  epImg=e&&e.img?e.img:"";showEpPrev();$("epimsg").textContent="Choose an image, drag one onto this window, or copy an image and paste it here with Ctrl+V.";
+  $("dlg").showModal();
+}
+$("new").onclick=function(){nextFlag=false;openForm(null)};
+$("cancel").onclick=function(){$("dlg").close()};
+$("f").onsubmit=function(ev){
+  ev.preventDefault();
+  var o={id:editId||String(Date.now())};
+  ids.forEach(function(k){o[k]=$(k).value.trim()});o.num=parseInt(o.num,10)||1;o.img=epImg;
+  if(editId){eps=eps.map(function(x){return x.id===editId?o:x})}else eps.push(o);
+  persist();render();$("dlg").close();if(!editId){initEpisode(o);openEpisode(o.num)}
+};
+$("q").oninput=render;
+$("order").onclick=function(){newest=!newest;this.textContent=newest?"Newest first":"Oldest first";render()};
+$("list").onclick=function(ev){
+  var b=ev.target.closest("button");if(!b)return;
+  var e=eps.filter(function(x){return x.id===b.dataset.id})[0];if(!e)return;
+  if(b.dataset.a==="open"){openEpisode(e.num);return}if(b.dataset.a==="edit")openForm(e);
+  if(b.dataset.a==="del"){if(b.dataset.armed){eps=eps.filter(function(x){return x.id!==e.id});persist();render()}else{b.dataset.armed=1;b.textContent="Confirm delete";setTimeout(function(){b.dataset.armed="";b.textContent="Delete"},3000)}}
+  if(b.dataset.a==="copy"){
+    var t="Episode "+e.num+": "+e.title+(e.arc?" ("+e.arc+")":"")+"\n"+(e.summary||"")+(e.battles?"\nBattles: "+e.battles:"")+(e.rewards?"\nRewards: "+e.rewards:"")+(e.hook?"\nNext time: "+e.hook:"");
+    var done=function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy recap"},1500)};
+    try{navigator.clipboard.writeText(t).then(done,function(){window.prompt("Copy this recap:",t)})}catch(x){window.prompt("Copy this recap:",t)}
+  }
+};
+$("backup").onclick=function(){$("bkt").value=JSON.stringify({episodes:eps,characters:chars,roster:roster,keywords:kws,villages:villages,map:mapS,missions:{list:missions,cur:curM},phases:phaseS,epdata:epData},null,1);$("bkmsg").textContent="";$("bk").showModal()};
+$("bkclose").onclick=function(){$("bk").close()};
+$("bkload").onclick=function(){
+  try{var d=JSON.parse($("bkt").value);if(d&&!Array.isArray(d)){if(Array.isArray(d.characters)){chars=d.characters;cpersist()}if(Array.isArray(d.roster)){roster=d.roster;rpersist()}if(Array.isArray(d.keywords)){kws=d.keywords;kpersist()}if(Array.isArray(d.villages)){villages=d.villages;vpersist()}if(d.map&&Array.isArray(d.map.tokens)){mapS=Object.assign(mapS,d.map);saveMap()}if(d.missions&&Array.isArray(d.missions.list)&&d.missions.list.length)sv(MSK,d.missions);if(d.phases&&typeof d.phases==="object"&&!Array.isArray(d.phases)){phaseS=d.phases;sv(PK,phaseS)}if(d.epdata&&typeof d.epdata==="object"&&!Array.isArray(d.epdata)){epData=d.epdata;sv(EDK,epData)}loadMissions();renderVillages();renderChars();renderMap()}if(d&&!Array.isArray(d)&&d.episodes)d=d.episodes;if(!Array.isArray(d))throw 0;
+    eps=d.filter(function(x){return x&&x.title}).map(function(x,i){x.id=x.id||String(Date.now()+i);x.num=parseInt(x.num,10)||i+1;return x});
+    persist();render();$("bkmsg").textContent="Loaded "+eps.length+" episodes."}
+  catch(e){$("bkmsg").textContent="That text isn’t a valid backup. Paste the full backup and try again."}
+};
+/* ---- villages, characters, all characters, keywords ---- */
+var CK="shinobi-chars-v1",RK="shinobi-roster-v1",KK="shinobi-kw-v1",VK="shinobi-villages-v1",WK="shinobi-view-v1",MAPK="shinobi-map-v1",MSK="shinobi-missions-v1",PK="shinobi-phase-v1",DK="shinobi-dss-v1";
+var chars=[],roster=[],kws=[],villages=[],tab="mission",vfilter="",rsel="",cTarget="mission",cEdit=null,vEdit=null,draft=[],draftImg="",lastRoll={},flashT={},missions=[],curM=0,phaseS={},dssT=6,curPhase="";
+var RANKS={Genin:[50,100],Chunin:[60,120],Jonin:[70,140],Kage:[80,160]};
+var JT={Offense:{cost:50,dice:5},Defense:{cost:50,dice:4},Supplementary:{cost:30,dice:0},Awakening:{cost:30,dice:0}};
+var KT={Offense:35,Defense:30};
+var KS={Offense:2,Defense:2,Supplementary:2,Awakening:1};
+function ld(k){try{var r=localStorage.getItem(k),v=r?JSON.parse(r):[];return Array.isArray(v)?v:[]}catch(e){return[]}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function cpersist(){sv(CK,chars)}function rpersist(){sv(RK,roster)}function kpersist(){sv(KK,kws)}function vpersist(){sv(VK,villages)}
+function clamp(v,m){return Math.max(0,Math.min(m,v))}
+var uidN=0;function uid(p){return p+Date.now().toString(36)+(uidN++).toString(36)+Math.floor(Math.random()*1296).toString(36)}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function byName(a,b){return a.name.localeCompare(b.name)}
+function flash(id,t){$(id).textContent=t;clearTimeout(flashT[id]);flashT[id]=setTimeout(function(){$(id).textContent=""},3500)}
+function costText(k){return JT[k].cost+" Chakra"+(JT[k].dice?", "+JT[k].dice+"d12":"")}
+function catOf(s){s=(s||"").trim().toLowerCase();if(s.length<3)return null;for(var k in JT){if(k.toLowerCase().indexOf(s.slice(0,3))===0)return k}return null}
+function newMove(){return{id:uid("m"),name:"",cat:"Offense",fx:"",kw:[]}}
+function fxLines(fx){return(fx||"").split(/\r?\n/).map(function(l){return l.trim()}).filter(Boolean)}
+function triggered(m,sum){return fxLines(m.fx).filter(function(l){var t=/^(\d+)\s*\+/.exec(l);return !t||sum>=parseInt(t[1],10)})}
+function fxHtml(fx){return fxLines(fx).map(function(l){var i=l.indexOf(":");return i>0&&i<32?"<div><b>"+esc(l.slice(0,i))+":</b>"+esc(l.slice(i+1))+"</div>":"<div>"+esc(l)+"</div>"}).join("")}
+function cleanMoves(){return draft.filter(function(m){return m.name.trim()}).map(function(m){return{id:m.id,name:m.name.trim(),cat:m.cat,fx:m.fx.trim(),kw:(m.kw||[]).slice(0,KS[m.cat]||1)}})}
+function kwSlots(m){var k=m.kw||[],o=[];if(k[0])o.push({n:k[0],t:0});if((KS[m.cat]||1)>1&&k[1])o.push({n:k[1],t:KT[m.cat]||0});return o}
+function ksm(cat){return KT[cat]?"unlocks at "+KT[cat]+"+":"always applies"}
+function charOptions(list,first,prefix){
+  var h=first?'<option value="">'+esc(first)+"</option>":"",g={};
+  list.forEach(function(r){var n=vname(r.vid)||"No village";(g[n]=g[n]||[]).push(r)});
+  Object.keys(g).sort().forEach(function(n){h+='<optgroup label="'+esc(n)+'">'+g[n].sort(byName).map(function(r){return'<option value="'+(prefix||"")+r.id+'">'+esc(r.name)+" ("+esc(r.rank)+")</option>"}).join("")+"</optgroup>"});
+  return h;
+}
+
+/* villages */
+function vget(id){return villages.filter(function(v){return v.id===id})[0]}
+function vname(id){var v=id?vget(id):null;return v?v.name:""}
+function seedVillages(){
+  var raw=null;try{raw=localStorage.getItem(VK)}catch(e){}
+  if(raw===null){
+    villages=[["v1","Austin\u2019s Leaf Village","Austin"],["v2","Brian\u2019s Leaf Village","Brian"],["v3","Dawson\u2019s Leaf Village","Dawson"],["v4","Cloud Village","NPC"],["v5","Sand Village","NPC"],["v6","Stone Village","NPC"]]
+      .map(function(v){return{id:v[0],name:v[1],owner:v[2],ryo:0,log:[]}});
+    vpersist();
+  }else villages=ld(VK);
+  try{if(!localStorage.getItem("shinobi-akatsuki-v1")){localStorage.setItem("shinobi-akatsuki-v1","1");if(!villages.some(function(v){return/akatsuki/i.test(v.name)})){villages.push({id:"v7",name:"Akatsuki",owner:"NPC",ryo:0,log:[]});vpersist()}}}catch(e){}
+}
+function fillVillageSelects(){
+  var opts=villages.map(function(v){return'<option value="'+esc(v.id)+'">'+esc(v.name)+"</option>"}).join("");
+  var cur=$("cvil").value;$("cvil").innerHTML='<option value="">No village</option>'+opts;$("cvil").value=cur;
+  if(vfilter&&vfilter!=="none"&&!vget(vfilter))vfilter="";
+  $("vfil").innerHTML='<option value="">All villages</option>'+opts+'<option value="none">No village</option>';$("vfil").value=vfilter;
+}
+var vcur="";
+function villageCard(v){
+  var npc=/^npc/i.test(v.owner||"");
+  var log=(v.log||[]).slice(-10).reverse().map(function(e){return"<div>"+(e.amt>0?"+":"\u2212")+Math.abs(e.amt).toLocaleString()+" Ryo"+(e.note?": "+esc(e.note):"")+' <span class="jm">'+esc(new Date(e.ts).toLocaleDateString())+"</span></div>"}).join("");
+  return'<div class="vc" data-id="'+v.id+'"><div class="vh"><strong>'+esc(v.name)+'</strong><span class="rk'+(npc?" npc":"")+'">'+esc(v.owner||"")+"</span></div>"
+  +'<div class="ryo">'+(v.ryo||0).toLocaleString()+" <small>Ryo</small></div>"
+  +'<div class="vin"><label>Amount<input type="number" min="1" class="vamt"></label><label>Note <small>(optional)</small><input class="vnote"></label></div>'
+  +'<div class="acts"><button class="small primary" data-v="add" data-id="'+v.id+'">Add Ryo</button><button class="small" data-v="spend" data-id="'+v.id+'">Spend Ryo</button><button class="small" data-v="edit" data-id="'+v.id+'">Edit</button><button class="small danger" data-v="del" data-id="'+v.id+'">Delete</button></div>'
+  +villageOverview(v)+(log?'<details class="fx" open><summary>History</summary>'+log+"</details>":"")+"</div>";
+}
+function renderVillages(){
+  if(!vget(vcur))vcur=villages.length?villages[0].id:"";
+  $("vsel").innerHTML=villages.map(function(v){return'<option value="'+esc(v.id)+'">'+esc(v.name)+" ("+(v.ryo||0).toLocaleString()+" Ryo)</option>"}).join("");
+  $("vsel").value=vcur;
+  var v=vget(vcur);$("villages").innerHTML=v?villageCard(v):'<div class="empty">No villages yet. Select Add village to create one.</div>';
+  fillVillageSelects();
+}
+var vovClosed={};
+function villageStats(v){
+  var done=missions.filter(function(m){return m.kind==="mission"&&m.status==="complete"&&m.vid===v.id}),earned=0;
+  done.forEach(function(m){var R=RANKM[m.rank];if(R&&m.paid)earned+=R.ryo});
+  return{done:done,earned:earned};
+}
+function villageOverview(v){
+  var S=villageStats(v),k=v.kage?roster.filter(function(r){return r.id===v.kage})[0]:null,terr=v.terr||0;
+  var opts=charOptions(roster,"No Kage selected");
+  if(k)opts=opts.replace('value="'+k.id+'"','value="'+k.id+'" selected');
+  var list=S.done.map(function(m){var R=RANKM[m.rank];returnmname(m)+": "+(R?m.rank+"-Rank, "+R.ryo+" Ryo":"custom")+(m.doneEp?", Episode "+m.doneEp:"")}).join("\n");
+  return'<details class="vov" data-id="'+v.id+'"'+(vovClosed[v.id]?"":" open")+'><summary class="jh">Village overview</summary>'
+  +'<div class="vstats"><div class="vs1"><b>'+S.earned.toLocaleString()+'</b><span>Ryo earned from missions</span></div><div class="vs1"><b>'+S.done.length+'</b><span>Missions completed</span></div><div class="vs1"><b>'+terr+"</b><span>Territories controlled</span></div></div>"
+  +'<div class="kage">'+(k?avatar(k):'<div class="av ini">?</div>')+'<div class="wi"><label>Current Kage<select class="kagesel" aria-label="Current Kage">'+opts+"</select></label>"+(k?'<div class="vn">'+esc(k.rank)+(vname(k.vid)?" | "+esc(vname(k.vid)):"")+"</div>":'<div class="vn">Choose any character from the roster.</div>')+"</div></div>"
+  +'<div class="ctl" style="margin:6px 0"><b>Territories</b><button class="small" data-v="terr-" data-id="'+v.id+'" aria-label="Remove a territory">\u2212</button><input type="number" class="terrin" min="0" value="'+terr+'" aria-label="Territories controlled" style="width:80px;flex:none"><button class="small" data-v="terr+" data-id="'+v.id+'" aria-label="Add a territory">+</button></div>'
+  +'<p class="note">Territories will connect to the map once its regions are scripted.</p>'
+  +(S.done.length?'<details class="fx"><summary>Missions completed ('+S.done.length+")</summary><div style=\"white-space:pre-wrap\">"+esc(list)+"</div></details>":"")
+  +"</details>";
+}
+$("villages").addEventListener("toggle",function(ev){var t=ev.target;if(t.classList&&t.classList.contains("vov"))vovClosed[t.dataset.id]=!t.open},true);
+$("villages").onchange=function(ev){
+  var t=ev.target,card=t.closest?t.closest(".vc"):null;if(!card)return;
+  var v=vget(card.dataset.id);if(!v)return;
+  if(t.classList.contains("kagesel")){v.kage=t.value;vpersist();renderVillages()}
+  else if(t.classList.contains("terrin")){v.terr=Math.max(0,parseInt(t.value,10)||0);vpersist();renderVillages()}
+};
+function payVillage(id,amt,note){var v=vget(id);if(!v)return false;v.ryo=(v.ryo||0)+amt;v.log=(v.log||[]).concat({amt:amt,note:note,ts:Date.now()}).slice(-30);vpersist();return true}
+function maxVillage(on){$("vwrap").classList.toggle("max",on);$("vmax").textContent=on?"Close full screen":"Maximize"}
+$("vsel").onchange=function(){vcur=this.value;renderVillages();maxVillage(true)};
+$("vmax").onclick=function(){maxVillage(!$("vwrap").classList.contains("max"))};
+$("vclose").onclick=function(){maxVillage(false)};
+document.addEventListener("keydown",function(ev){if(ev.key==="Escape"&&$("vwrap").classList.contains("max"))maxVillage(false)});
+
+$("villages").onclick=function(ev){
+  var b=ev.target.closest("button");if(!b||!b.dataset.v)return;
+  var v=vget(b.dataset.id);if(!v)return;var a=b.dataset.v,card=b.closest(".vc");
+  if(a==="add"||a==="spend"){
+    var amt=Math.floor(Number(card.querySelector(".vamt").value));
+    if(!(amt>0)){flash("vmsg","Enter an amount above 0.");return}
+    if(a==="spend"){if(amt>(v.ryo||0)){flash("vmsg",v.name+" only has "+(v.ryo||0).toLocaleString()+" Ryo.");return}amt=-amt}
+    v.ryo=(v.ryo||0)+amt;v.log=(v.log||[]).concat({amt:amt,note:card.querySelector(".vnote").value.trim(),ts:Date.now()}).slice(-30);
+    vpersist();renderVillages();
+  }
+  else if(a==="terr+"||a==="terr-"){v.terr=Math.max(0,(v.terr||0)+(a==="terr+"?1:-1));vpersist();renderVillages()}
+  else if(a==="edit")openV(v);
+  else if(a==="del"){
+    if(b.dataset.armed){villages=villages.filter(function(x){return x.id!==v.id});chars.concat(roster).forEach(function(c){if(c.vid===v.id)c.vid=""});vpersist();cpersist();rpersist();renderVillages();renderChars();renderMap()}
+    else{b.dataset.armed=1;b.textContent="Confirm delete";setTimeout(function(){b.dataset.armed="";b.textContent="Delete"},3000)}
+  }
+};
+function openV(v){vEdit=v?v.id:null;$("vdt").textContent=v?"Edit village":"Add village";$("vname").value=v?v.name:"";$("vown").value=v?v.owner||"":"";$("vryo").value=v?v.ryo||0:0;$("vd").showModal()}
+$("newv").onclick=function(){openV(null)};
+$("vcancel").onclick=function(){$("vd").close()};
+$("vf").onsubmit=function(ev){
+  ev.preventDefault();
+  var ryo=Math.max(0,Math.floor(Number($("vryo").value))||0),v=vEdit?vget(vEdit):null;
+  if(v){
+    if(ryo!==(v.ryo||0)){v.log=(v.log||[]).concat({amt:ryo-(v.ryo||0),note:"Balance corrected",ts:Date.now()}).slice(-30)}
+    v.name=$("vname").value.trim();v.owner=$("vown").value.trim();v.ryo=ryo;
+  }else villages.push({id:uid("v"),name:$("vname").value.trim(),owner:$("vown").value.trim(),ryo:ryo,log:[]});
+  vpersist();renderVillages();renderChars();renderMap();$("vd").close();
+};
+$("vfil").onchange=function(){vfilter=this.value;renderChars()};
+
+/* keywords: a separate list for each jutsu category */
+function kwFor(cat){return kws.filter(function(k){return !k.cat||k.cat===cat})}
+function kwDesc(n,cat){var k=kwFor(cat).filter(function(x){return x.name.toLowerCase()===String(n).toLowerCase()})[0];return k?k.desc:""}
+function addKw(name,desc,cat){
+  name=name.trim();if(!name)return"";
+  var k=kwFor(cat).filter(function(x){return x.name.toLowerCase()===name.toLowerCase()})[0];
+  if(!k){k={id:uid("k"),name:name,desc:(desc||"").trim(),cat:cat};kws.push(k)}else if(desc&&!k.desc)k.desc=desc.trim();
+  kpersist();return k.name;
+}
+function kwById(id){return kws.filter(function(k){return k.id===id})[0]}
+function ensureKwIds(){kws.forEach(function(k){if(!k.id)k.id=uid("k")});kpersist()}
+function renameKw(oldN,newN,cat){
+  var fix=function(list){list.forEach(function(c){(c.moves||[]).forEach(function(m){if(!cat||m.cat===cat)m.kw=(m.kw||[]).map(function(n){return n===oldN?newN:n})})})};
+  fix(roster);fix(chars);fix(draft);cpersist();rpersist();
+}
+function renderKw(){
+  var order=Object.keys(JT),un=kws.filter(function(k){return !k.cat}).length;
+  var opts=function(sel){return'<option value=""'+(sel?"":" selected")+">All categories</option>"+order.map(function(c){return"<option"+(c===sel?" selected":"")+">"+c+"</option>"}).join("")};
+  $("kwl").innerHTML=(un?'<p class="note">'+un+(un===1?" keyword has":" keywords have")+" no category yet, so "+(un===1?"it shows":"they show")+" up in every list. Choose a category for each.</p>":"")
+  +(kws.length?kws.slice().sort(function(a,b){return order.indexOf(a.cat)-order.indexOf(b.cat)||a.name.localeCompare(b.name)}).map(function(k){
+    return'<div class="kwr" data-id="'+k.id+'"><input class="kn" value="'+esc(k.name)+'" aria-label="Keyword name"><select class="kc" aria-label="Category">'+opts(k.cat)+'</select><input class="kd" value="'+esc(k.desc||"")+'" aria-label="What it does"><button type="button" class="small danger" data-kd="'+k.id+'">Delete</button></div>'}).join(""):'<p class="note">No keywords yet.</p>');
+}
+$("kwadd").onclick=function(){if(!$("kwname").value.trim())return;addKw($("kwname").value,$("kwdesc").value,$("kwcat").value);$("kwname").value="";$("kwdesc").value="";$("kwmsg").textContent="";renderKw();renderRows()};
+$("kwname").onkeydown=function(ev){if(ev.key==="Enter"){ev.preventDefault();$("kwadd").click()}};
+$("kwl").onchange=function(ev){
+  var t=ev.target,row=t.closest(".kwr");if(!row)return;var k=kwById(row.dataset.id);if(!k)return;
+  if(t.classList.contains("kn")){
+    var nn=t.value.trim(),on=k.name;
+    if(!nn){t.value=on;return}
+    if(nn===on)return;
+    if(kws.some(function(x){return x!==k&&x.name.toLowerCase()===nn.toLowerCase()&&(x.cat||"")===(k.cat||"")})){$("kwmsg").textContent="That category already has a keyword named "+nn+".";t.value=on;return}
+    k.name=nn;renameKw(on,nn,k.cat);
+  }
+  else if(t.classList.contains("kc"))k.cat=t.value;
+  else if(t.classList.contains("kd"))k.desc=t.value.trim();
+  kpersist();$("kwmsg").textContent="Saved.";renderKw();renderRows();
+};
+$("kwl").onclick=function(ev){
+  var b=ev.target.closest("[data-kd]");if(!b)return;
+  if(b.dataset.armed){kws=kws.filter(function(k){return k.id!==b.dataset.kd});kpersist();renderKw();renderRows()}
+  else{b.dataset.armed=1;b.textContent="Confirm delete";setTimeout(function(){b.dataset.armed="";b.textContent="Delete"},3000)}
+};
+
+/* images */
+function readImage(file,cb){
+  var fr=new FileReader();
+  fr.onload=function(){var im=new Image();
+    im.onload=function(){var S=320,cv=document.createElement("canvas");cv.width=cv.height=S;var m=Math.min(im.width,im.height);
+      cv.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)*.25,m,m,0,0,S,S);cb(cv.toDataURL("image/jpeg",.85))};
+    im.onerror=function(){cb("")};im.src=fr.result};
+  fr.onerror=function(){cb("")};fr.readAsDataURL(file);
+}
+function avatar(c,size){
+  var cls="av"+(size?" "+size:"");
+  return c.img&&/^data:image\//.test(c.img)?'<img class="'+cls+'" alt="" src="'+esc(c.img)+'">':'<div class="'+cls+' ini">'+esc((c.name||"?").trim().charAt(0).toUpperCase()||"?")+"</div>";
+}
+function showPrev(){$("cprev").innerHTML=avatar({img:draftImg,name:$("cname").value},"big")}
+function takeImg(f){if(f&&/^image\//.test(f.type))readImage(f,function(u){if(u){draftImg=u;showPrev();$("cimsg").textContent="Image added."}else $("cimsg").textContent="That file couldn\u2019t be read as an image."})}
+$("cpick").onclick=function(){$("cimg").click()};
+$("cunpick").onclick=function(){draftImg="";showPrev()};
+$("cname").oninput=function(){if(!draftImg)showPrev()};
+$("cimg").onchange=function(){var f=this.files[0];this.value="";takeImg(f)};
+$("cd").addEventListener("paste",function(ev){var fs=(ev.clipboardData&&ev.clipboardData.files)||[];if(fs.length&&/^image\//.test(fs[0].type)){ev.preventDefault();takeImg(fs[0])}});
+$("cd").addEventListener("dragover",function(ev){ev.preventDefault()});
+$("cd").addEventListener("drop",function(ev){var f=ev.dataTransfer&&ev.dataTransfer.files[0];if(f&&/^image\//.test(f.type)){ev.preventDefault();takeImg(f)}});
+
+/* moveset editor */
+function rowHtml(m,i){
+  var cats=Object.keys(JT).map(function(k){return"<option"+(k===m.cat?" selected":"")+">"+k+"</option>"}).join("");
+  var k=m.kw||[],two=(KS[m.cat]||1)>1;
+  var kopt=function(v){var ns=kwFor(m.cat).map(function(x){return x.name});if(v&&ns.indexOf(v)<0)ns.push(v);return'<option value="">None</option>'+ns.map(function(n){return'<option value="'+esc(n)+'"'+(n===v?" selected":"")+">"+esc(n)+"</option>"}).join("")};
+  return'<div class="mv" data-i="'+i+'"><div class="grid"><label class="full">Jutsu name<input class="mn" value="'+esc(m.name)+'"></label>'
+  +'<label>Category<select class="mc">'+cats+'</select></label><label>Cost<span class="mcost">'+costText(m.cat)+"</span></label>"
+  +"<label>"+m.cat+" keyword"+(two?" 1":"")+" <small>"+(two?"(always applies)":"(one per awakening)")+'</small><select class="mk0">'+kopt(k[0]||"")+"</select></label>"
+  +(two?"<label>"+m.cat+" keyword 2 <small>("+ksm(m.cat)+')</small><select class="mk1">'+kopt(k[1]||"")+"</select></label>":"")
+  +'<label class="full">Effects <small>(one per line)</small><textarea class="mf" rows="3">'+esc(m.fx)+'</textarea></label></div>'
+  +'<button type="button" class="small danger" data-rm="'+i+'">Remove jutsu</button></div>';
+}
+function renderRows(){$("mvrows").innerHTML=draft.length?draft.map(rowHtml).join(""):'<p class="note">No jutsu yet. Add one or paste your list.</p>'}
+function mvEdit(ev){
+  var t=ev.target,row=t.closest(".mv");if(!row)return;var m=draft[+row.dataset.i];if(!m)return;
+  if(t.classList.contains("mn"))m.name=t.value;
+  else if(t.classList.contains("mf"))m.fx=t.value;
+  else if(t.classList.contains("mc")){
+    if(ev.type!=="change")return;
+    m.cat=t.value;var ok=kwFor(m.cat).map(function(x){return x.name});
+    m.kw=(m.kw||[]).filter(function(n){return ok.indexOf(n)>-1}).slice(0,KS[m.cat]||1);renderRows();
+  }
+  else if(t.classList.contains("mk0")||t.classList.contains("mk1")){var kk=(m.kw||[]).slice(0,2);kk[0]=kk[0]||"";kk[1]=kk[1]||"";kk[t.classList.contains("mk1")?1:0]=t.value;m.kw=kk}
+}
+$("mvrows").oninput=mvEdit;$("mvrows").onchange=mvEdit;
+$("mvrows").onclick=function(ev){var b=ev.target.closest("button");if(!b)return;if(b.dataset.rm!==undefined){draft.splice(+b.dataset.rm,1);renderRows()}};
+$("addmv").onclick=function(){draft.push(newMove());renderRows();var r=$("mvrows").querySelectorAll(".mn");if(r.length)r[r.length-1].focus()};
+$("mvimp").onclick=function(){
+  var n=0;
+  $("mvbulk").value.split(/\r?\n\s*\r?\n/).forEach(function(bk){
+    var ls=bk.split(/\r?\n/).map(function(l){return l.trim()}).filter(Boolean);if(!ls.length)return;
+    var p=ls[0].split(/\s*\|\s*/),m=newMove();
+    m.name=p[0];m.cat=(p[1]&&catOf(p[1]))||"Offense";m.fx=ls.slice(1).join("\n");
+    if(p[2])p[2].split(",").forEach(function(k){var nm=addKw(k,"",m.cat);if(nm&&m.kw.indexOf(nm)<0)m.kw.push(nm)});
+    m.kw=m.kw.slice(0,KS[m.cat]||1);draft.push(m);n++;
+  });
+  renderRows();renderKw();if(n)$("mvbulk").value="";
+  $("mvmsg").textContent=n?"Added "+n+" jutsu. Check each category, since jutsu without one default to Offense.":"Nothing to add. Paste a jutsu name followed by its effect lines.";
+};
+
+/* cards */
+function KOB(c){var d=c.hp<=0?" disabled":"";return'<button class="small danger" data-a="ko" data-id="'+c.id+'"'+d+'>KO \u221210</button>'}
+function meter(c,k){
+  var lab=k==="hp"?"HP":"Chakra",max=c[k==="hp"?"maxHp":"maxCk"],cur=c[k],pct=max?Math.round(cur/max*100):0;
+  return'<div class="mt"><div class="mtl"><span>'+lab+'</span><span><input type="number" class="cur" data-id="'+c.id+'" data-k="'+k+'" value="'+cur+'" min="0" max="'+max+'" aria-label="'+esc(c.name)+" current "+lab+'"> / '+max+'</span></div><div class="track"><div class="fill '+k+'" style="width:'+pct+'%"></div></div><div class="adj">'+(k==="hp"?KOB(c):"")
+  +(k==="hp"?[-5,5]:[-5,-1,1,5]).map(function(d){return'<button class="small" data-a="adj" data-id="'+c.id+'" data-k="'+k+'" data-d="'+d+'">'+(d>0?"+":"\u2212")+Math.abs(d)+"</button>"}).join("")+"</div></div>";
+}
+function moveHtml(m,c){
+  var t=JT[m.cat]||JT.Offense,kw=kwSlots(m);
+  var fxh=fxHtml(m.fx)+kw.filter(function(s){return kwDesc(s.n,m.cat)}).map(function(s){return"<div><i><b>"+esc(s.n)+(s.t?" ("+s.t+"+)":"")+":</b> "+esc(kwDesc(s.n,m.cat))+"</i></div>"}).join("");
+  return'<div class="jr"><div><b>'+esc(m.name)+'</b><div class="jm">'+m.cat+" | "+costText(m.cat)+"</div>"
+  +(kw.length?'<div class="chips">'+kw.map(function(s){return'<span class="chip">'+esc(s.n)+(s.t?" ("+s.t+"+)":"")+"</span>"}).join("")+"</div>":"")+"</div>"
+  +(c?'<button class="small" data-a="use" data-id="'+c.id+'" data-j="'+m.id+'"'+(c.hp<=0?' disabled title="Down"':c.ck<t.cost?' disabled title="Not enough Chakra"':"")+">Use</button>":"")+"</div>"
+  +(fxh?'<details class="fx"><summary>Effects</summary>'+fxh+"</details>":"");
+}
+function jutsuBlock(c){
+  var mv=c.moves||[],closed=!!mvClosed[c.id];
+  var h='<details class="jb mvset" data-id="'+c.id+'"'+(closed?"":" open")+'><summary class="jh">Moveset ('+mv.length+")</summary>";
+  h+=mv.length?mv.map(function(m){return moveHtml(m,c)}).join(""):'<p class="note">No jutsu yet. Edit this character to add a moveset.</p>';
+  if(lastRoll[c.id])h+='<div class="roll">'+lastRoll[c.id].map(esc).join("<br>")+"</div>";
+  return h+"</details>";
+}
+function statusRow(c){
+  var on=c.st||[];
+  return'<div class="strow" aria-label="Status conditions">'+allStatus().map(function(s){
+    var a=on.indexOf(s)>-1,col=SCOL[s]||"#64748b";
+    return'<button class="st'+(a?" on":"")+'" data-a="stat" data-id="'+c.id+'" data-s="'+esc(s)+'" aria-pressed="'+a+'"'+(a?' style="background:'+col+'"':"")+">"+esc(s)+"</button>";
+  }).join("")+"</div>";
+}
+function missionCard(c){
+  var st=dssState(c);
+  return'<div class="pc'+(st?" "+st:"")+'">'+head(c)+(c.interfere?'<div class="phtag" style="background:var(--blue)">Interfering ninja</div>':"")+statusRow(c)+(c.hp<=0?dssBlock(c):"")+meter(c,"hp")+meter(c,"ck")+jutsuBlock(c)
+  +'<div class="acts"><button class="small" data-a="rest" data-id="'+c.id+'">Full restore</button><button class="small" data-a="edit" data-id="'+c.id+'">Edit</button><button class="small danger" data-a="rem" data-id="'+c.id+'">Remove from mission</button></div></div>';
+}
+function head(c){return'<div class="pch"><div class="who">'+avatar(c)+'<div class="wi"><strong>'+esc(c.name)+"</strong>"+(vname(c.vid)?'<div class="vn">'+esc(vname(c.vid))+"</div>":"")+'<span class="rk">'+esc(c.rank)+"</span></div></div></div>"}
+function rosterCard(r){
+  var on=chars.filter(function(c){return c.rosterId===r.id}).map(function(c){return c.mn}),mv=r.moves||[];
+  return'<div class="pc">'+head(r)+'<p class="note" style="margin:8px 0">'+r.maxHp+" HP | "+r.maxCk+" Chakra"+(on.length?" | Deployed in "+on.length+(on.length>1?" missions":" mission"):"")+"</p>"
+  +'<details class="fx"><summary>Moveset ('+mv.length+")</summary>"+(mv.length?mv.map(function(m){return moveHtml(m,null)}).join(""):'<p class="note">No jutsu.</p>')+"</details>"
+  +'<div class="acts"><button class="small" data-a="edit" data-id="'+r.id+'">Edit</button><button class="small danger" data-a="rdel" data-id="'+r.id+'">Delete</button></div></div>';
+}
+function inFilter(r){return !vfilter||(vfilter==="none"?!(r.vid&&vget(r.vid)):r.vid===vfilter)}
+function renderChars(){
+  var f=roster.filter(inFilter);
+  $("cros").textContent=roster.length;
+  if(rsel&&!f.some(function(r){return r.id===rsel}))rsel="";
+  $("rpick").innerHTML=charOptions(f,"Jump to a character ("+f.length+")...");$("rpick").value=rsel;
+  fillTpick();
+  var list=rsel?f.filter(function(r){return r.id===rsel}):f;
+  $("chars").innerHTML=list.length?list.map(rosterCard).join(""):'<div class="empty" style="grid-column:1/-1">'+(roster.length?"No characters in this village yet.":"No characters yet. Select Add character to create your first one.")+"</div>";
+  renderEpisode();
+}
+$("rpick").onchange=function(){rsel=this.value;renderChars()};
+
+/* character dialog */
+function fillMax(){var r=RANKS[$("crank").value];if(r){$("cmaxhp").value=r[0];$("cmaxck").value=r[1]}}
+function openC(c,target){
+  cTarget=target;cEdit=c?c.id:null;
+  $("cdt").textContent=target==="mission"?"Edit mission character":(c?"Edit character":"Add character");
+  $("cmnote").classList.toggle("hidden",target!=="mission");
+  $("cname").value=c?c.name:"";$("crank").value=c?c.rank:"Genin";
+  $("cvil").value=c?(c.vid||""):(vfilter&&vfilter!=="none"?vfilter:"");
+  if(c){$("cmaxhp").value=c.maxHp;$("cmaxck").value=c.maxCk}else fillMax();
+  draft=c?clone(c.moves||[]):[];draftImg=c&&c.img?c.img:"";
+  renderRows();renderKw();showPrev();$("mvmsg").textContent="";$("mvbulk").value="";
+  $("cimsg").textContent="Choose an image, drag one onto this window, or copy an image and paste it here with Ctrl+V. It is resized and saved in this browser.";
+  $("cd").showModal();
+}
+$("newc").onclick=function(){openC(null,"roster")};
+$("ccancel").onclick=function(){$("cd").close()};
+$("crank").onchange=fillMax;
+$("cf").onsubmit=function(ev){
+  ev.preventDefault();
+  var isM=cTarget==="mission",list=isM?chars:roster;
+  var mh=Math.max(1,parseInt($("cmaxhp").value,10)||1),mc=Math.max(1,parseInt($("cmaxck").value,10)||1);
+  var data={name:$("cname").value.trim(),rank:$("crank").value,vid:$("cvil").value,maxHp:mh,maxCk:mc,img:draftImg,moves:cleanMoves()};
+  if(cEdit){
+    var c=list.filter(function(x){return x.id===cEdit})[0];
+    if(c){Object.assign(c,data);if(isM){c.hp=clamp(c.hp,mh);c.ck=clamp(c.ck,mc)}}
+  }else{var o=Object.assign({id:uid("r")},clone(data));roster.push(o);rsel=o.id}
+  cpersist();rpersist();renderChars();renderMap();$("cd").close();
+};
+
+/* missions, turns and episodes */
+var RANKM={
+  C:{name:"C-Rank: Routine Assignment",threat:4,ryo:200,desc:"Escort assignments, supply deliveries, patrols, and protecting civilians. Low-risk."},
+  B:{name:"B-Rank: Dangerous Assignment",threat:5,ryo:300,desc:"Missing-nin encounters, hostile territory, intelligence retrieval, and enemy shinobi interference."},
+  A:{name:"A-Rank: High Priority",threat:7,ryo:400,desc:"Assassinations, military operations, protecting important figures, and disrupting enemy villages."},
+  S:{name:"S-Rank: Critical Assignment",threat:11,ryo:500,desc:"Kage-level threats, major military operations, dangerous rogue shinobi, and events that could change the Shinobi World."}
+};
+var THREAT={Genin:1,Chunin:2,Jonin:3,Kage:4};
+var STAT=["Burn","Poison","Bleed","Bind"],SCOL={Burn:"#e8590c",Poison:"#7c3aed",Bleed:"#dc2626",Bind:"#475569"},SK="shinobi-status-v1",customStat=[];
+var curEp=0,mside="h",showAllV=false,showCur=false,EDK="shinobi-epdata-v1",epData={},mvClosed={},ultNote=null;
+function allStatus(){return STAT.concat(customStat)}
+function applyDamage(c,m,amt,label){
+  var was=c.hp;c.hp=clamp(c.hp-amt,c.maxHp);var diff=c.hp-was;
+  if(m&&diff!==0){
+    logTo(m,c.name+": "+label+", HP "+was+" to "+c.hp+" ("+diff+").","hp","",{who:c.name,hp:diff});
+    if(was>0&&c.hp<=0)logTo(m,c.name+" drops to 0 HP and enters Death Saving Mode.","hp","",{who:c.name});
+  }
+  return was>0&&c.hp<=0;
+}
+function loadStat(){try{var r=localStorage.getItem(SK),a=r?JSON.parse(r):[];if(Array.isArray(a))customStat=a}catch(e){}}
+function mpersist(){sv(MSK,{list:missions,cur:curM,ep:curEp});try{render()}catch(e){}}
+function curMission(){return missions.filter(function(m){return m.n===curM})[0]}
+function mname(m){if(m.kind==="encounter")return"Encounter: "+(m.title||"Akatsuki ambush");return m.title||(RANKM[m.rank]?RANKM[m.rank].name:"Mission scroll")}
+function missionBy(n){return missions.filter(function(m){return m.n===n})[0]}
+function loadMissions(){
+  try{var r=localStorage.getItem(MSK);if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.list)){missions=o.list;curM=o.cur||0;curEp=o.ep||0}}}catch(e){}
+  missions.forEach(function(m){m.status=m.status||"active";m.rank=m.rank||"";m.owner=m.owner||"";m.ep=m.ep||0;m.kind=m.kind||"mission";m.arc=m.arc||"";m.bn=m.bn||0;m.bopen=!!m.bopen;m.cast=m.cast||[];m.log=m.log||[];m.seen=m.seen||[]});
+  chars.forEach(function(c){if(!c.mn)c.mn=curM||1;if(!c.side)c.side="h"});
+  chars.forEach(function(c){if(!missions.some(function(m){return m.n===c.mn}))missions.push({n:c.mn,title:"",ep:0,owner:"",rank:"",status:"active",kind:"mission",arc:"",bn:0,bopen:false,cast:[],log:[],seen:[]})});
+  if(!missions.some(function(m){return m.n===curM}))curM=missions.length?missions[0].n:0;
+  mpersist();cpersist();
+}
+function missionOpts(){
+  return missions.slice().sort(function(a,b){return a.n-b.n}).map(function(m){
+    var l=chars.filter(function(c){return c.mn===m.n});
+    return l.length?'<optgroup label="'+esc(mname(m))+'">'+l.map(function(c){return'<option value="c:'+c.id+'">'+esc(c.name)+(c.side==="v"?" (villain)":"")+"</option>"}).join("")+"</optgroup>":"";
+  }).join("");
+}
+function tmn(t){var c=t.src==="c"?chars.filter(function(x){return x.id===t.ref})[0]:null;return c&&c.mn&&mOf(c)?" | "+mname(mOf(c)):""}
+function loadPhase(){
+  try{var r=localStorage.getItem(PK);if(r){var o=JSON.parse(r);if(o&&typeof o==="object"&&!Array.isArray(o))phaseS=o}}catch(e){}
+  try{var d=parseInt(localStorage.getItem(DK),10);if(d>=1&&d<=10)dssT=d}catch(e){}
+}
+function phases(){
+  var o=[],npc=false;
+  villages.forEach(function(v){var w=(v.owner||"").trim();if(!w)return;if(/^npc/i.test(w)){npc=true;return}if(o.indexOf(w)<0)o.push(w)});
+  if(npc)o.push("NPC");return o;
+}
+function phaseName(p){return p==="NPC"?"Villain":p+"\u2019s ninja"}
+function turnName(p){return p==="NPC"?"Villain turn":p+"\u2019s turn"}
+function ownerOf(c){var v=c.vid?vget(c.vid):null,w=v?(v.owner||"").trim():"";return /^npc/i.test(w)?"NPC":w}
+function epdPersist(){sv(EDK,epData)}
+function loadEpData(){try{var r=localStorage.getItem(EDK);if(r){var o=JSON.parse(r);if(o&&typeof o==="object"&&!Array.isArray(o))epData=o}}catch(e){}}
+function epdOf(n){
+  var k=String(n),d=epData[k]||(epData[k]={log:[],ended:false,saved:false,wrap:{}});
+  if(d.bt===undefined){d.bt={};d.bd=d.bd||0;d.results=d.results||[]}
+  if(d.round===undefined)d.round=1;
+  if(d.turn===undefined){var ps=phases(),i=d.owner?ps.indexOf(d.owner):0;d.turn=i<0?0:i}
+  return d;
+}
+function epd(){return epdOf(curEp)}
+function epRec(n){return eps.filter(function(x){return x.num===n})[0]}
+function turnOwner(n){var d=epdOf(n),ps=phases();return ps[d.turn]||""}
+function isFirstEp(e){return e.num===eps.reduce(function(a,x){return Math.min(a,x.num)},1e9)}
+function epMissionsList(n){return missions.filter(function(m){return m.ep===n||(m.seen||[]).indexOf(n)>-1||m.doneEp===n}).sort(function(a,b){return a.n-b.n})}
+function turnMissions(n){
+  var own=turnOwner(n);
+  if(own==="NPC")return missions.filter(function(m){return m.kind==="encounter"&&(m.status!=="complete"||m.doneEp===n)}).sort(function(a,b){return a.n-b.n});
+  return missions.filter(function(m){return m.kind==="mission"&&m.owner===own&&(m.status!=="complete"||m.doneEp===n)}).sort(function(a,b){return a.n-b.n});
+}
+function activeMissionOf(owner){return missions.filter(function(m){return m.owner===owner&&m.kind==="mission"&&m.status!=="complete"})[0]}
+/* history */
+function stamp(){return{ts:Date.now(),ep:curEp}}
+function logEp(text,kind){var d=epd(),o=stamp();o.text=text;o.kind=kind||"note";d.log.push(o);if(d.log.length>500)d.log=d.log.slice(-500);epdPersist()}
+function logTo(m,text,kind,j,x){
+  if(!m)return;var o=stamp();o.text=text;o.kind=kind||"note";o.j=j||"";o.b=m.bopen?m.bn:0;
+  if(x){Object.keys(x).forEach(function(k){o[k]=x[k]})}
+  m.log=m.log||[];m.log.push(o);if(m.log.length>500)m.log=m.log.slice(-500);
+  m.seen=m.seen||[];if(m.seen.indexOf(curEp)<0)m.seen.push(curEp);
+  mpersist();
+}
+function mOf(c){return missions.filter(function(m){return m.n===c.mn})[0]}
+function histHtml(log,only,flat){
+  var items=(log||[]).slice().reverse();
+  if(only)items=items.filter(function(e){return e.ep===curEp});
+  if(!items.length)return'<p class="note">Nothing recorded yet.</p>';
+  var h="",last=null;
+  items.forEach(function(e){
+    var k=(e.ep||0)+"|"+(e.b||0);
+    if(!flat&&k!==last){h+="<h4>"+(e.ep?"Episode "+e.ep:"Earlier")+" | "+(e.b?"Battle "+e.b:"Between battles")+"</h4>";last=k}
+    h+='<div class="he '+(e.kind||"")+'"><span class="jm">'+(flat&&e.ep?"Ep "+e.ep+" | ":"")+esc(new Date(e.ts).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}))+"</span> "+esc(e.text)+"</div>";
+  });
+  return'<div class="hist">'+h+"</div>";
+}
+function epTitle(n){var e=epRec(n);return e&&e.title?": "+e.title:""}
+function epMissions(num){
+  var d=epData[String(num)],lines=[],ps=phases();
+  if(d)lines.push(d.ended?"Episode ended":"In progress | Battles so far: "+(d.bd||0));
+  epMissionsList(num).forEach(function(m){lines.push(mname(m)+": "+(m.kind==="encounter"?"villain":m.owner||"no owner")+(RANKM[m.rank]?", "+m.rank+"-Rank":"")+", "+(m.status==="complete"?"complete":m.status==="active"?"active":"setup")+(m.arc?", arc "+m.arc:""))});
+  return lines.length?'<div class="field"><h3>Turns and missions</h3><p>'+esc(lines.join("\n"))+"</p></div>":"";
+}
+/* death saving mode */
+function dssState(c){if(c.hp>0)return"";var d=c.ds||{};return(d.ok||0)>=3?"stable":(d.fail||0)>=3?"dead":"dying"}
+function syncDss(c){if(c.hp<=0){if(!c.ds)c.ds={ok:0,fail:0}}else{delete c.ds;delete c.dsLast}}
+function dssBlock(c){
+  var d=c.ds||{ok:0,fail:0},st=dssState(c)||"dying";
+  var pips=function(n,cls){var h="",i;for(i=0;i<3;i++)h+='<span class="pip'+(i<n?" "+cls:"")+'"></span>';return h};
+  var head=st==="stable"?"STABILIZED":st==="dead"?"DEAD":"DEATH SAVING MODE";
+  var msg=st==="dying"?"You are in danger of dying! Make 3 successes (D10 roll of "+dssT+"+) to be stabilized. Three failures and it is over.":st==="stable"?"Stabilized at 0 HP. Heal to get back up.":"Three failed death saves. This character has died.";
+  return'<div class="dss '+st+'"><h4>'+head+"</h4><p>"+msg+'</p><div class="pips"><small>Successes</small>'+pips(d.ok||0,"ok")+'</div><div class="pips"><small>Failures</small>'+pips(d.fail||0,"bad")+"</div>"
+  +(c.dsLast?"<p><b>"+esc(c.dsLast)+"</b></p>":"")
+  +(st==="dying"?'<div class="acts" style="justify-content:center"><button class="small primary" data-a="dsroll" data-id="'+c.id+'">Roll D10 death save</button><button class="small" data-a="dsok" data-id="'+c.id+'">+ Success</button><button class="small" data-a="dsfail" data-id="'+c.id+'">+ Fail</button></div>':"")+"</div>";
+}
+$("dsst").onchange=function(){var d=parseInt(this.value,10);dssT=d>=1&&d<=10?d:6;try{localStorage.setItem(DK,dssT)}catch(e){}renderChars()};
+
+/* episodes: each episode is four turns (every player, then the villain) */
+function initEpisode(e){
+  var d=epdOf(e.num);d.turn=0;d.round=1;d.bt={};d.bd=0;d.results=[];d.ended=false;d.saved=false;
+  var ps=phases(),m=ps.length?activeMissionOf(ps[0]):null;
+  if(m&&m.arc&&!e.arc){e.arc=m.arc;persist()}
+  epdPersist();
+}
+function startNextEpisode(open){
+  var num=eps.reduce(function(a,x){return Math.max(a,x.num)},0)+1;
+  var e={id:String(Date.now()),num:num,title:"Untitled episode",arc:"",img:"",date:new Date().toISOString().slice(0,10),rank:"",summary:"",cast:"",jutsu:"",battles:"",rewards:"",hook:""};
+  eps.push(e);initEpisode(e);persist();render();if(open!==false)openEpisode(num);
+}
+function openEpisode(n){
+  curEp=n;epd();var l=turnMissions(n);curM=l.length?l[0].n:0;mside="h";mpersist();syncWs();window.scrollTo(0,0);
+}
+function syncWs(){
+  var ok=curEp&&eps.some(function(e){return e.num===curEp});
+  $("epws").classList.toggle("hidden",!ok);$("eplist").classList.toggle("hidden",!!ok);
+  if(ok)renderEpisode();
+}
+$("epback").onclick=function(){curEp=0;mpersist();syncWs()};
+function showRankInfo(){var R=RANKM[$("mrank").value];$("mrinfo").textContent=R?R.desc+" Threat level "+R.threat+". Reward: "+R.ryo+" Ryo.":""}
+$("mrank").onchange=showRankInfo;
+function turnTab(p){return p==="NPC"?"Akatsuki Turn":p+"\u2019s Turn"}
+function renderPhase(){
+  var ps=phases(),d=epd();curPhase="";
+  if(!curEp||!ps.length){$("phasebar").classList.add("hidden");return}
+  $("phasebar").classList.remove("hidden");
+  if(d.turn>=ps.length)d.turn=0;
+  var e=epRec(curEp),own=ps[d.turn],main=own&&own!=="NPC"?activeMissionOf(own):null,arc=(e&&e.arc)||(main&&main.arc)||"";
+  var tabs=ps.map(function(p,i){return'<button role="tab" class="ttab'+(i===d.turn?" on":"")+'" data-t="'+i+'" aria-selected="'+(i===d.turn)+'">'+esc(turnTab(p))+"</button>"}).join("");
+  $("phasebar").innerHTML='<div class="phcur"><div class="ttabs" role="tablist">'+tabs+'</div><div class="jm" style="margin-top:6px">Episode '+curEp+(arc?" | <b>Arc: "+esc(arc)+"</b>":"")+(d.ended?" | This episode has ended.":" | Open a tab to draft and run that player&rsquo;s mission scrolls.")+"</div></div>"
+  +(d.ended?"":'<div class="pbtns"><button class="small danger" id="epclose">End episode</button></div>');
+}
+$("phasebar").onclick=function(ev){
+  var t=ev.target.closest("[data-t]");
+  if(t){var d=epd();d.turn=+t.dataset.t;epdPersist();var l=d.ended?epMissionsList(curEp):turnMissions(curEp);curM=l.length?l[0].n:0;mside="h";mpersist();renderChars();return}
+  var b=ev.target.closest("button");if(!b||b.id!=="epclose")return;
+  if(epd().ended)return;
+  if(!b.dataset.armed){var old=b.textContent;b.dataset.armed=1;b.textContent="Confirm: end episode";setTimeout(function(){b.dataset.armed="";if(b.isConnected)b.textContent=old},4000);return}
+  endEpisode();
+};
+function renderEpisode(){
+  var e=epRec(curEp);
+  if(!curEp||!e)return;
+  var d=epd(),ps=phases(),own=ps[d.turn]||"",ended=d.ended,isV=own==="NPC",first=isFirstEp(e);
+  var main=!isV&&own?activeMissionOf(own):null;
+  chars.forEach(syncDss);
+  $("epwt").textContent="Episode "+e.num+(e.title?": "+e.title:"");$("epwart").innerHTML=epArt(e);$("dsst").value=dssT;
+  renderPhase();showRankInfo();
+  var canCraft=!ended&&!isV&&!!own&&!main;
+  $("mcreate").classList.toggle("hidden",!canCraft);$("mcreate").open=canCraft;
+  $("encpanel").classList.toggle("hidden",!isV||ended);$("erange").value=mapS.enc||2;
+  var l=ended?epMissionsList(curEp):turnMissions(curEp);
+  if(!l.some(function(m){return m.n===curM}))curM=l.length?l[0].n:0;
+  var empty=ended?"No missions were worked on in this episode.":isV?"No encounters yet. Trigger one above.":"No active mission for "+esc(own)+" yet. Craft one below to begin "+esc(turnName(own))+".";
+  $("mlist").innerHTML=l.length?l.map(function(m){
+    return'<button class="mpill'+(m.n===curM?" on":"")+'" data-mn="'+m.n+'">'+esc(mname(m))+'<span class="jm">'+esc(m.kind==="encounter"?"Villain":m.owner||"")+(RANKM[m.rank]?" | "+m.rank+"-Rank":"")+(m.arc?" | Arc: "+esc(m.arc):"")+" | "+(m.status==="complete"?"Complete":m.status==="active"?"Active":"Setup")+"</span></button>"}).join("")
+    :'<p class="note">'+empty+"</p>";
+  $("mmake").disabled=!canCraft;$("mmake").textContent=canCraft?"Draft mission scroll for "+own+"\u2019s turn":(ended?"Episode ended":"Finish the current mission before drafting another");
+  renderMdetail();renderWrap(e);
+}
+$("mlist").onclick=function(ev){var b=ev.target.closest("[data-mn]");if(b){curM=+b.dataset.mn;mside="h";mpersist();renderChars()}};
+/* episode ending: a drafted recap of the important events */
+function wrapData(){
+  var ms=epMissionsList(curEp),d=epd(),ryo={},cast=[],jut=[],cas=[],lines=[],ps=phases();
+  ms.forEach(function(m){
+    var R=RANKM[m.rank];
+    lines.push(mname(m)+": "+(m.kind==="encounter"?"villain":m.owner||"no owner")+(R?", "+m.rank+"-Rank":"")+", "+(m.status==="complete"?"completed":"still in progress")+(m.arc?", arc "+m.arc:""));
+    if(R&&m.paid&&m.doneEp===curEp){var n=vname(m.vid)||m.owner;ryo[n]=(ryo[n]||0)+R.ryo}
+    (m.cast||[]).forEach(function(n){if(cast.indexOf(n)<0)cast.push(n)});
+    chars.filter(function(c){return c.mn===m.n}).forEach(function(c){
+      if(cast.indexOf(c.name)<0)cast.push(c.name);
+      var st=dssState(c);if(st)cas.push(c.name+" ("+({dying:"down at 0 HP",stable:"stabilized at 0 HP",dead:"dead"})[st]+", "+mname(m)+")");
+    });
+    (m.log||[]).forEach(function(en){if(en.ep!==curEp)return;if(en.j&&jut.indexOf(en.j)<0)jut.push(en.j);if(en.dead&&cas.join("|").indexOf(en.who+" (dead")<0)cas.push(en.who+" (died, "+mname(m)+")")});
+  });
+  ps.forEach(function(p){lines.push((p==="NPC"?"Akatsuki":p)+": "+(d.bt[p]||0)+" battles")});
+  lines.push("Battles this episode: "+(d.bd||0));
+  (d.results||[]).forEach(function(r){lines.push(r)});
+  return{ms:ms,ryo:ryo,cast:cast,jut:jut,cas:cas,lines:lines};
+}
+function draftEvents(){
+  var ms=epMissionsList(curEp),lines=[],key=[];
+  ms.forEach(function(m){
+    var L=(m.log||[]).filter(function(e){return e.ep===curEp}),R=RANKM[m.rank],res={},bn=0,parts=[];
+    L.forEach(function(e){var x=/^Battle \d+ ends: (.*?)\.?$/.exec(e.text);if(x){res[x[1]]=(res[x[1]]||0)+1;bn++}});
+    if(L.some(function(e){return /^Mission crafted/.test(e.text)}))parts.push("the scroll was drafted");
+    if(L.some(function(e){return /^Mission started/.test(e.text)}))parts.push("the mission began");
+    if(bn)parts.push(bn+(bn>1?" battles":" battle")+" fought ("+Object.keys(res).map(function(k){return res[k]+" "+k.toLowerCase()}).join(", ")+")");
+    if(m.status==="complete"&&m.doneEp===curEp)parts.push("completed"+(R&&m.paid?", earning "+R.ryo+" Ryo for "+(vname(m.vid)||m.owner):""));
+    else parts.push("still in progress");
+    lines.push("- "+mname(m)+" ("+(m.kind==="encounter"?"Akatsuki":m.owner||"no owner")+(R?", "+m.rank+"-Rank":"")+"): "+parts.join("; ")+".");
+    L.forEach(function(e){if(/has died|enters Death Saving Mode|is stabilized|as an interfering ninja|runs into/.test(e.text)||(e.hp&&e.hp<=-20))key.push("- "+e.text)});
+  });
+  return{overview:"Draft of Episode "+curEp+":\n"+(lines.length?lines.join("\n"):"- No mission scrolls were drafted."),key:key.slice(0,15).join("\n")};
+}
+function saveRecap(e,d){
+  var A=wrapData(),w=d.wrap||(d.wrap={});
+  if(w.cas===undefined)w.cas=A.cas.join("\n");
+  e.summary=[w.sum,w.imp?"Important events:\n"+w.imp:""].filter(Boolean).join("\n\n");
+  e.cast=A.cast.join(", ");e.jutsu=A.jut.join(", ");
+  e.battles=A.lines.join("\n")+(w.cas?"\nInjuries and deaths: "+w.cas.replace(/\n/g,"; "):"");
+  e.rewards=Object.keys(A.ryo).map(function(n){return n+": "+A.ryo[n]+" Ryo"}).join("\n");
+  e.hook=w.hook||"";d.saved=true;epdPersist();persist();render();
+}
+function endEpisode(){
+  var d=epd(),e=epRec(curEp);if(!e)return;
+  var done=curEp,ev=draftEvents(),A=wrapData();
+  d.wrap=d.wrap||{};
+  if(!d.wrap.sum)d.wrap.sum=ev.overview;
+  if(!d.wrap.imp)d.wrap.imp=ev.key;
+  if(d.wrap.cas===undefined)d.wrap.cas=A.cas.join("\n");
+  logEp("Episode ended.","sys");d.ended=true;
+  saveRecap(e,d);
+  if(!epRec(done+1))startNextEpisode(false);
+  renderChars();
+  flash("emsg","Episode "+done+" has ended. A draft of the important events is below, and Episode "+(done+1)+" has been created.");
+}
+function renderWrap(e){
+  var d=epd(),box=$("wrapup");
+  if(!d.ended){box.classList.add("hidden");return}
+  box.classList.remove("hidden");
+  var A=wrapData(),w=d.wrap||{},casDef=w.cas!==undefined?w.cas:A.cas.join("\n");
+  var ryoLines=Object.keys(A.ryo).map(function(n){return n+": "+A.ryo[n].toLocaleString()+" Ryo"});
+  box.innerHTML='<h3 style="margin:0 0 6px;font:400 28px Dela Gothic One,Anton,sans-serif">Episode '+e.num+' has ended</h3>'
+  +"<p>The important events so far were drafted from your battle history. Edit anything, then save. Your changes are kept in the episode scroll.</p>"
+  +'<div class="field"><h3>Missions and battles</h3><p>'+esc(A.lines.join("\n"))+"</p></div>"
+  +'<div class="field"><h3>Ryo earned this episode</h3><p>'+(ryoLines.length?esc(ryoLines.join("\n")):"No Ryo was paid out.")+"</p></div>"
+  +'<label>What happened<textarea id="wsum" data-k="sum" rows="7">'+esc(w.sum||"")+"</textarea></label>"
+  +'<label>Important events <small>(deaths, near-deaths, interfering ninja, heavy hits)</small><textarea id="wimp" data-k="imp" rows="5">'+esc(w.imp||"")+"</textarea></label>"
+  +'<label>Injuries and deaths<textarea id="wcas" data-k="cas" rows="3">'+esc(casDef)+"</textarea></label>"
+  +'<label>Where the story picks up next<textarea id="whook" data-k="hook" rows="2">'+esc(w.hook||"")+"</textarea></label>"
+  +'<div class="acts" style="margin-top:12px"><button class="primary" data-w="save">Save changes to the episode</button>'+(epRec(e.num+1)?'<button data-w="next">Open Episode '+(e.num+1)+"</button>":"")+"</div>"
+  +'<p class="note">'+(d.saved?"Saved to Episode "+e.num+" in the Episode Scrolls.":"Not saved yet.")+"</p>";
+}
+$("wrapup").onchange=function(ev){var t=ev.target,k=t.dataset&&t.dataset.k;if(!k)return;var d=epd();d.wrap=d.wrap||{};d.wrap[k]=t.value;epdPersist()};
+$("wrapup").onclick=function(ev){
+  var b=ev.target.closest("button");if(!b||!b.dataset.w)return;
+  var e=epRec(curEp),d=epd();if(!e)return;
+  if(b.dataset.w==="save"){saveRecap(e,d);renderChars()}
+  else if(b.dataset.w==="next"&&epRec(e.num+1))openEpisode(e.num+1);
+};
+/* episode pictures */
+var epImg="";
+function epArt(e){
+  var badge='<div class="epbadge">EP '+esc(e.num)+"</div>";
+  if(e.img&&/^data:image\//.test(e.img))return'<img src="'+esc(e.img)+'" alt="">'+badge;
+  var pal=[["#7a1017","#e8590c"],["#10224a","#3d7be0"],["#12361f","#4aa35f"],["#3a2a08","#d4a017"]][(+e.num||0)%4],g="eg"+(+e.num||0);
+  return'<svg viewBox="0 0 200 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="'+g+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+pal[0]+'"/><stop offset="1" stop-color="'+pal[1]+'"/></linearGradient></defs><rect width="200" height="260" fill="url(#'+g+')"/>'
+  +'<path d="M100 38L117 106L186 130L117 154L100 222L83 154L14 130L83 106Z" fill="#fff" opacity=".2"/><circle cx="100" cy="130" r="13" fill="#000" opacity=".4"/>'
+  +'<g stroke="#fff" stroke-opacity=".28" fill="none" stroke-width="3"><path d="M10 50c40 22 70 4 92-34M110 252c34-30 52-22 82-60"/></g></svg>'+badge;
+}
+function showEpPrev(){$("epprev").innerHTML=epImg?'<img class="av big" alt="" src="'+esc(epImg)+'">':'<div class="av big ini">EP</div>'}
+function takeEpImg(f,cb){if(f&&/^image\//.test(f.type))readImage(f,function(u){if(u)cb(u);else{var m=$("epimsg");if(m)m.textContent="That file couldn\u2019t be read as an image."}})}
+function formImg(u){epImg=u;showEpPrev();$("epimsg").textContent="Image added."}
+$("epickbtn").onclick=function(){$("epimg").click()};
+$("epimg").onchange=function(){var f=this.files[0];this.value="";takeEpImg(f,formImg)};
+$("epunpick").onclick=function(){epImg="";showEpPrev()};
+$("dlg").addEventListener("paste",function(ev){var fs=(ev.clipboardData&&ev.clipboardData.files)||[];if(fs.length&&/^image\//.test(fs[0].type)){ev.preventDefault();takeEpImg(fs[0],formImg)}});
+$("dlg").addEventListener("dragover",function(ev){ev.preventDefault()});
+$("dlg").addEventListener("drop",function(ev){var f=ev.dataTransfer&&ev.dataTransfer.files[0];if(f&&/^image\//.test(f.type)){ev.preventDefault();takeEpImg(f,formImg)}});
+function setEpImage(u){var e=epRec(curEp);if(!e)return;e.img=u;persist();render();renderEpisode()}
+$("epwpick").onclick=function(){$("epwimg").click()};
+$("epwimg").onchange=function(){var f=this.files[0];this.value="";takeEpImg(f,setEpImage)};
+document.addEventListener("paste",function(ev){
+  if(!curEp||$("epws").classList.contains("hidden")||$("dlg").open||$("cd").open||$("duel").open)return;
+  var fs=(ev.clipboardData&&ev.clipboardData.files)||[];
+  if(fs.length&&/^image\//.test(fs[0].type)){ev.preventDefault();takeEpImg(fs[0],setEpImage)}
+});
+$("epws").addEventListener("dragover",function(ev){ev.preventDefault()});
+$("epws").addEventListener("drop",function(ev){var f=ev.dataTransfer&&ev.dataTransfer.files[0];if(f&&/^image\//.test(f.type)){ev.preventDefault();takeEpImg(f,setEpImage)}});
+/* crafting a mission (any player turn) */
+$("mmake").onclick=function(){
+  var d=epd(),own=turnOwner(curEp),e=epRec(curEp);
+  if(d.ended||!e)return;
+  if(!own||own==="NPC"){flash("emsg","The villain triggers encounters instead of crafting missions.");return}
+  if(activeMissionOf(own)){flash("emsg","Complete the current mission before crafting a new one.");return}
+  var n=missions.reduce(function(a,m){return Math.max(a,m.n)},0)+1;
+  var v=villages.filter(function(x){return(x.owner||"").trim()===own})[0],R=RANKM[$("mrank").value],arc=$("marc").value.trim();
+  var nm={n:n,title:$("mname").value.trim(),ep:curEp,owner:own,vid:v?v.id:"",rank:$("mrank").value,arc:arc,kind:"mission",status:"setup",ignore:false,paid:false,bn:0,bopen:false,cast:[],log:[],seen:[curEp]};
+  missions.push(nm);curM=n;mside="h";$("mname").value="";$("marc").value="";
+  if(arc&&own===phases()[0]){e.arc=arc;persist()}
+  logTo(nm,"Mission crafted: "+R.name+" (threat level "+R.threat+", "+R.ryo+" Ryo).","sys");
+  logEp(turnName(own)+": "+R.name+" scroll drafted"+(arc?", arc "+arc:"")+".","sys");
+  epdPersist();mpersist();renderChars();
+  flash("emsg","Mission scroll drafted for "+own+(v?"":". No village is controlled by "+own+", so its reward can\u2019t be paid")+". Deploy heroes and villains next.");
+};
+function threatOf(list){return list.reduce(function(a,c){return a+(THREAT[c.rank]||1)},0)}
+function renderMdetail(){
+  var m=curMission(),d=epd(),ended=d.ended;
+  var visible=ended?epMissionsList(curEp):turnMissions(curEp);
+  if(!m||visible.indexOf(m)<0){$("mdetail").innerHTML='<p class="note">'+(turnOwner(curEp)==="NPC"?"Trigger an encounter, or select one above.":"Select or craft a mission above.")+"</p>";return}
+  var R=RANKM[m.rank],locked=ended,enc=m.kind==="encounter";
+  var heroes=chars.filter(function(c){return c.mn===m.n&&c.side!=="v"}),vill=chars.filter(function(c){return c.mn===m.n&&c.side==="v"});
+  var vt=threatOf(vill),need=R?R.threat:0,vn=m.vid?vname(m.vid):"",done=m.status==="complete"||locked;
+  var bs=m.bopen?"Battle "+m.bn+" in progress":(m.bn?m.bn+(m.bn>1?" battles":" battle")+" fought":"No battles yet");
+  var h='<div class="mhead"><h3>'+esc(mname(m))+'</h3><div class="mrank">'+(R?esc(R.name):enc?"Akatsuki encounter":"Custom mission")+"</div>"+(R?"<p>"+esc(R.desc)+"</p>":"")
+  +'<div class="mfacts">'+(R?'<span class="rk">Threat level '+R.threat+'</span><span class="rk">Reward '+R.ryo+" Ryo</span>":"")+'<span class="rk npc">'+esc(enc?"Villain":m.owner||"No owner")+(vn?" | "+esc(vn):"")+'</span><span class="rk">'+(m.status==="complete"?"Complete":m.status==="active"?"Active":"Setup")+'</span><span class="rk">'+esc(bs)+"</span></div>"
+  +(!enc&&!locked&&m.status!=="complete"?'<label class="inl">Arc name <input class="arcin" type="text" value="'+esc(m.arc||"")+'" style="width:240px"></label>':(m.arc?'<div class="jm">Arc: '+esc(m.arc)+"</div>":""))+"</div>";
+  if(ultNote&&!locked&&chars.some(function(c){return c.id===ultNote.id}))h+='<div class="ult" role="alert"><b>Ultimate Jutsu KO on '+esc(ultNote.name)+':</b> 10 HP has been removed. Remember to subtract the difference between the attacker&rsquo;s offense die results and '+esc(ultNote.name)+'&rsquo;s defense die results from their HP for extra damage.<div class="ctl" style="margin:8px 0 0"><label class="inl">Extra damage <input id="ultx" type="number" min="0" style="width:90px"></label><button class="small primary" data-m="ultapply">Apply extra damage</button><button class="small" data-m="ultclose">Dismiss</button></div></div>';
+  var nl=(m.log||[]).length;
+  h+='<div class="tabs" role="tablist" style="margin:10px 0"><button role="tab" data-m="side" data-s="h" aria-selected="'+(mside==="h")+'">Heroes ('+heroes.length+')</button><button role="tab" data-m="side" data-s="v" aria-selected="'+(mside==="v")+'">Villains ('+vill.length+(need?", threat "+vt+"/"+need:"")+')</button><button role="tab" data-m="side" data-s="l" aria-selected="'+(mside==="l")+'">Battle history ('+nl+")</button></div>";
+  if(mside==="l"){
+    if(!locked)h+='<div class="ctl"><input id="bnote" type="text" aria-label="Battle note, for example who used which jutsu" style="flex:1 1 260px"><button class="primary" data-m="note">Add to battle history</button></div>';
+    h+='<label class="inl" style="margin-bottom:6px"><input type="checkbox" class="hcur" style="width:auto"'+(showCur?" checked":"")+"> Show only this episode</label>"+histHtml(m.log,showCur);
+  }else{
+    if(mside==="v"&&need)h+='<p class="tm '+(vt===need?"ok":"bad")+'">Villain threat '+vt+" of "+need+(vt===need?": matches the mission.":vt<need?": "+(need-vt)+" more needed.":": "+(vt-need)+" over.")+'</p><label class="inl" style="margin-bottom:8px"><input type="checkbox" class="ign" style="width:auto"'+(m.ignore?" checked":"")+"> Ignore the threat total for this mission</label>";
+    if(!done){
+      var pool=roster.filter(function(r){return showAllV?true:mside==="v"?ownerOf(r)==="NPC":enc?ownerOf(r)!=="NPC":ownerOf(r)===m.owner});
+      h+='<div class="ctl"><select id="dpick" aria-label="Choose a character to deploy">'+charOptions(pool,mside==="v"?"Craft a villain: choose a character...":"Deploy a hero...")+'</select><button class="primary" data-m="deploy">Deploy</button><label class="inl"><input type="checkbox" class="sav" style="width:auto"'+(showAllV?" checked":"")+"> Show every character (interfering ninja)</label></div>";
+      if(!pool.length)h+='<p class="note">'+(mside==="v"?"No villain characters yet. Create characters in NPC villages first, or show every character.":"No characters found for "+esc(m.owner||"this player")+". Create characters in their village first, or show every character.")+"</p>";
+    }
+    h+='<div class="ctl"><button class="small" data-m="mvall" data-s="close">Minimize all movesets</button><button class="small" data-m="mvall" data-s="open">Expand all movesets</button>'+(locked?"":'<input id="snew" type="text" aria-label="New status condition name" style="width:150px"><button class="small" data-m="sadd">Add status type</button>')+"</div>";
+    var list=mside==="v"?vill:heroes;
+    h+='<div class="pcs" id="mchars">'+(list.length?list.map(missionCard).join(""):'<div class="empty" style="grid-column:1/-1">'+(m.status==="complete"?"Everyone returned to their rosters.":mside==="v"?"No villains deployed.":"No heroes deployed.")+"</div>")+"</div>";
+  }
+  h+='<div class="acts" style="margin-top:14px">';
+  if(!locked&&m.status!=="complete"){
+    if(!enc&&m.status==="setup")h+='<button class="primary" data-m="start">Start mission</button>';
+    if(m.status==="active"){
+      if(!m.bopen)h+='<button data-m="bstart">Start battle</button>';
+      else h+='<select id="bres" aria-label="Battle result" style="width:auto"><option>Heroes won</option><option>Villains won</option><option>Draw or retreat</option></select><button data-m="bend">End battle</button>';
+      h+='<button class="primary" data-m="end">'+(enc?"End encounter":"Complete Mission"+(R?" and pay "+R.ryo+" Ryo":""))+"</button>";
+    }
+    h+='<button class="small danger" data-m="del">Delete '+(enc?"encounter":"mission")+"</button>";
+  }
+  if(m.status==="complete")h+='<span class="rk">'+(enc?"Encounter":"Mission")+" complete"+(m.paid&&R?": "+R.ryo+" Ryo sent to "+esc(vn):"")+"</span>";
+  h+="</div>";
+  $("mdetail").innerHTML=h;
+}
+$("mdetail").addEventListener("toggle",function(ev){var t=ev.target;if(t.classList&&t.classList.contains("mvset"))mvClosed[t.dataset.id]=!t.open},true);
+function deploy(){
+  var m=curMission(),r=roster.filter(function(x){return x.id===$("dpick").value})[0];
+  if(!m||m.status==="complete"||epd().ended)return;
+  if(!r){flash("emsg","Choose a character first.");return}
+  var hero=mside!=="v",ow=ownerOf(r),inter=m.kind==="encounter"?false:hero?ow!==m.owner:ow!=="NPC";
+  chars.push({id:uid("c"),mn:m.n,side:hero?"h":"v",interfere:inter,rosterId:r.id,name:r.name,rank:r.rank,vid:r.vid||"",maxHp:r.maxHp,maxCk:r.maxCk,hp:r.maxHp,ck:r.maxCk,img:r.img||"",moves:clone(r.moves||[])});
+  logTo(m,r.name+" joins the "+(hero?"heroes":"villains")+(inter?" as an interfering ninja":"")+".","sys");
+  cpersist();renderChars();flash("emsg",r.name+" deployed as a "+(hero?"hero":"villain")+" in "+mname(m)+(inter?" (interfering)":"")+".");
+}
+function mAction(b){
+  var m=curMission(),a=b.dataset.m,d=epd();if(!m)return;
+  if(a==="side"){mside=b.dataset.s;renderMdetail();return}
+  if(a==="mvall"){chars.filter(function(c){return c.mn===m.n}).forEach(function(c){mvClosed[c.id]=b.dataset.s==="close"});renderMdetail();return}
+  if(d.ended)return;
+  if(a==="sadd"){
+    var nm=$("snew").value.trim();if(!nm)return;
+    if(allStatus().some(function(s){return s.toLowerCase()===nm.toLowerCase()})){flash("emsg",nm+" already exists.");return}
+    customStat.push(nm);sv(SK,customStat);renderChars();flash("emsg","Status type "+nm+" added to every character.");return;
+  }
+  if(a==="ultclose"){ultNote=null;renderMdetail();return}
+  if(a==="ultapply"){
+    var xv=parseInt($("ultx").value,10)||0,uc=chars.filter(function(c){return ultNote&&c.id===ultNote.id})[0];
+    if(uc&&xv>0){var dd=applyDamage(uc,mOf(uc),xv,"Extra damage (offense minus defense)");cpersist();ultNote=null;renderChars();flash("emsg",uc.name+" takes "+xv+" extra damage."+(dd?" "+uc.name+" is in Death Saving Mode!":""))}
+    else{ultNote=null;renderMdetail()}
+    return;
+  }
+  if(a==="deploy"){deploy();return}
+  if(a==="note"){var t=$("bnote").value.trim();if(!t)return;logTo(m,t,"note");renderMdetail();return}
+  var R=RANKM[m.rank],enc=m.kind==="encounter",heroes=chars.filter(function(c){return c.mn===m.n&&c.side!=="v"}),vt=threatOf(chars.filter(function(c){return c.mn===m.n&&c.side==="v"})),own=turnOwner(curEp);
+  if(a==="start"){
+    if(!heroes.length){flash("emsg","Deploy at least one hero first.");return}
+    if(R&&vt!==R.threat&&!m.ignore){flash("emsg","Villain threat must total "+R.threat+" (it is "+vt+" now). Adjust the villains, or tick Ignore the threat total.");return}
+    m.status="active";logTo(m,"Mission started.","sys");logEp(mname(m)+" started.","sys");mpersist();renderChars();flash("emsg",mname(m)+" has started. Start a battle when you are ready.");
+  }
+  else if(a==="bstart"){
+    if(m.status!=="active"||m.bopen)return;
+    m.bn=(m.bn||0)+1;m.bopen=true;logTo(m,"Battle "+m.bn+" begins.","sys");logEp(mname(m)+": battle "+m.bn+" begins.","sys");mpersist();renderChars();
+  }
+  else if(a==="bend"){
+    if(!m.bopen)return;
+    var res=$("bres")?$("bres").value:"Draw or retreat";
+    logTo(m,"Battle "+m.bn+" ends: "+res+".","sys");m.bopen=false;d.bd=(d.bd||0)+1;d.bt[own]=(d.bt[own]||0)+1;d.results=d.results||[];d.results.push("Battle "+m.bn+" ("+mname(m)+"): "+res);
+    logEp(mname(m)+": battle "+m.bn+" ends ("+res+"). "+d.bt[own]+" battle"+(d.bt[own]>1?"s":"")+" this turn.","sys");epdPersist();mpersist();renderChars();
+  }
+  else if(a==="end"){
+    var lab=enc?"End encounter":"Complete Mission"+(R?" and pay "+R.ryo+" Ryo":"");
+    if(b.dataset.armed){
+      if(m.bopen){logTo(m,"Battle "+m.bn+" ends as the "+(enc?"encounter":"mission")+" is completed.","sys");m.bopen=false}
+      m.status="complete";m.doneEp=curEp;var msg=mname(m)+(enc?" ended.":" completed.");
+      var mine=chars.filter(function(c){return c.mn===m.n});
+      mine.forEach(function(c){
+        if(m.cast.indexOf(c.name)<0)m.cast.push(c.name);
+        if(c.origin){var o=chars.filter(function(x){return x.id===c.origin})[0];if(o){o.hp=c.hp;o.ck=c.ck}}
+      });
+      if(R&&!m.paid&&!enc){
+        if(payVillage(m.vid,R.ryo,mname(m)+" ("+m.rank+"-Rank)")){m.paid=true;msg+=" "+R.ryo+" Ryo sent to "+vname(m.vid)+"."}
+        else msg+=" No village found for "+m.owner+", so no Ryo was sent.";
+      }
+      var ids=mine.map(function(c){return c.id});
+      chars=chars.filter(function(c){return c.mn!==m.n});
+      mapS.tokens=mapS.tokens.filter(function(t){return !(t.src==="c"&&ids.indexOf(t.ref)>-1)});
+      msg+=" Heroes and villains return to their rosters.";
+      logTo(m,msg,"sys");logEp(msg,"sys");saveMap();mpersist();cpersist();renderVillages();renderChars();renderMap();flash("emsg",msg);
+    }else{b.dataset.armed=1;b.textContent="Confirm: "+lab;setTimeout(function(){b.dataset.armed="";if(b.isConnected)b.textContent=lab},4000)}
+  }
+  else if(a==="del"){
+    if(b.dataset.armed){
+      var gone=chars.filter(function(c){return c.mn===m.n}).map(function(c){return c.id});
+      chars=chars.filter(function(c){return c.mn!==m.n});
+      mapS.tokens=mapS.tokens.filter(function(t){return !(t.src==="c"&&gone.indexOf(t.ref)>-1)});
+      missions=missions.filter(function(x){return x.n!==m.n});
+      var l=turnMissions(curEp);curM=l.length?l[0].n:0;
+      cpersist();mpersist();saveMap();renderChars();renderMap();
+    }else{b.dataset.armed=1;b.textContent="Confirm: removes its characters";setTimeout(function(){b.dataset.armed="";if(b.isConnected)b.textContent="Delete "+(enc?"encounter":"mission")},3500)}
+  }
+}
+$("mdetail").onclick=function(ev){
+  var b=ev.target.closest("button");if(!b)return;
+  if(b.dataset.m){mAction(b);return}
+  cardAction(ev,true);
+};
+$("mdetail").onchange=function(ev){
+  var t=ev.target,m=curMission();
+  if(t.classList.contains("ign")){if(m){m.ignore=t.checked;mpersist()}renderMdetail()}
+  else if(t.classList.contains("sav")){showAllV=t.checked;renderMdetail()}
+  else if(t.classList.contains("hcur")){showCur=t.checked;renderMdetail()}
+  else if(t.classList.contains("arcin")){
+    if(!m)return;m.arc=t.value.trim();
+    if(m.owner===phases()[0]){var e0=epRec(m.ep);if(e0){e0.arc=m.arc;persist()}}
+    mpersist();renderChars();
+  }
+  else cardChange(ev);
+};
+$("mdetail").onkeydown=function(ev){
+  if(ev.key!=="Enter")return;
+  if(ev.target.id==="bnote"){ev.preventDefault();var b=$("mdetail").querySelector('[data-m="note"]');if(b)mAction(b)}
+  if(ev.target.id==="snew"){ev.preventDefault();var s=$("mdetail").querySelector('[data-m="sadd"]');if(s)mAction(s)}
+};
+/* villain turn: the Akatsuki wander the map at random */
+$("erange").onchange=function(){mapS.enc=Math.max(1,Math.min(10,parseInt(this.value,10)||2));saveMap()};
+$("enc").onclick=function(){
+  var d=epd();if(d.ended||turnOwner(curEp)!=="NPC")return;
+  var pool=roster.filter(function(r){return /akatsuki/i.test(vname(r.vid))});
+  if(!pool.length)pool=roster.filter(function(r){return ownerOf(r)==="NPC"});
+  if(!pool.length){flash("emsg","Create Akatsuki characters first: add them to the Akatsuki village in All characters.");return}
+  var range=mapS.enc||2,busy={},notes=[],made=0,firstN=0;
+  missions.forEach(function(m){if(m.kind==="encounter"&&m.status!=="complete")chars.forEach(function(c){if(c.mn===m.n&&c.side==="v"&&c.rosterId)busy[c.rosterId]=1})});
+  pool.forEach(function(r){
+    if(busy[r.id]){notes.push(r.name+" is still in an unfinished encounter");return}
+    var had=mapS.tokens.some(function(t){return t.src==="r"&&t.ref===r.id});
+    placeToken("r",r.id);
+    var t=mapS.tokens.filter(function(x){return x.src==="r"&&x.ref===r.id})[0];if(!t)return;
+    if(!had){t.x=Math.floor(Math.random()*GW);t.y=Math.floor(Math.random()*GH)}
+    var steps=rollDice(mapS.dice)||6,i;
+    for(i=0;i<steps;i++){t.x=Math.max(0,Math.min(GW-1,t.x+Math.floor(Math.random()*3)-1));t.y=Math.max(0,Math.min(GH-1,t.y+Math.floor(Math.random()*3)-1))}
+    notes.push(r.name+" roams "+steps+" squares to column "+(t.x+1)+", row "+(t.y+1));
+    var near=mapS.tokens.filter(function(o){return o!==t&&Math.max(Math.abs(o.x-t.x),Math.abs(o.y-t.y))<=range&&ownerOf(tinfo(o))&&ownerOf(tinfo(o))!=="NPC"});
+    if(!near.length)return;
+    var n=missions.reduce(function(a,m){return Math.max(a,m.n)},0)+1,names=near.map(function(o){return tinfo(o).name});
+    var em={n:n,title:r.name+" vs "+names.join(", "),ep:curEp,owner:"NPC",kind:"encounter",rank:"",arc:"",vid:"",status:"active",ignore:true,paid:false,bn:0,bopen:false,cast:[],log:[],seen:[curEp]};
+    missions.push(em);if(!firstN)firstN=n;
+    chars.push({id:uid("c"),mn:n,side:"v",rosterId:r.id,name:r.name,rank:r.rank,vid:r.vid||"",maxHp:r.maxHp,maxCk:r.maxCk,hp:r.maxHp,ck:r.maxCk,img:r.img||"",moves:clone(r.moves||[])});
+    near.forEach(function(o){
+      var s=(o.src==="c"?chars:roster).filter(function(x){return x.id===o.ref})[0];if(!s)return;
+      chars.push({id:uid("c"),mn:n,side:"h",origin:o.src==="c"?s.id:"",rosterId:o.src==="r"?s.id:(s.rosterId||""),name:s.name,rank:s.rank,vid:s.vid||"",maxHp:s.maxHp,maxCk:s.maxCk,hp:o.src==="c"?s.hp:s.maxHp,ck:o.src==="c"?s.ck:s.maxCk,img:s.img||"",moves:clone(s.moves||[])});
+    });
+    logTo(em,r.name+" runs into "+names.join(", ")+". The encounter begins.","sys");
+    logEp(r.name+" ran into "+names.join(", ")+" (encounter).","sys");made++;
+  });
+  saveMap();drawTokens();renderTokList();cpersist();
+  var sum="The Akatsuki move across the map: "+notes.join("; ")+". "+(made?made+(made>1?" encounters begin.":" encounter begins."):"No shinobi crossed their path.");
+  logEp(sum,"sys");if(firstN){curM=firstN;mside="h"}
+  mpersist();renderChars();renderMap();flash("emsg",sum);
+};
+
+/* offense jutsu duel */
+var duel=null,AUTO=10;
+function cget(id){return chars.filter(function(c){return c.id===id})[0]}
+function okTot(v,n){return typeof v==="number"&&isFinite(v)&&Math.floor(v)===v&&v>=n&&v<=12*n}
+function fighterCard(c,role,cost){
+  var hp=c.maxHp?Math.round(c.hp/c.maxHp*100):0,ck=c.maxCk?Math.round(c.ck/c.maxCk*100):0;
+  return'<div class="fighter '+role+'">'+avatar(c,"huge")+'<strong style="font:400 24px Dela Gothic One,Anton,sans-serif">'+esc(c.name)+'</strong><div class="vn">'+esc(vname(c.vid)||"No village")+" | "+esc(c.rank)+"</div>"
+  +'<div class="mtl"><span>HP</span><span>'+c.hp+" / "+c.maxHp+'</span></div><div class="track"><div class="fill hp" style="width:'+hp+'%"></div></div>'
+  +'<div class="mtl"><span>Chakra</span><span>'+c.ck+(cost?" \u2192 "+Math.max(0,c.ck-cost):"")+" / "+c.maxCk+'</span></div><div class="track"><div class="fill ck" style="width:'+ck+'%"></div></div>'
+  +((c.st||[]).length?'<div class="jm">Status: '+esc(c.st.join(", "))+"</div>":"")+"</div>";
+}
+function moveInfo(m){
+  var ks=kwSlots(m);
+  var kd=ks.filter(function(s){return kwDesc(s.n,m.cat)}).map(function(s){return"<div><i><b>"+esc(s.n)+(s.t?" ("+s.t+"+)":"")+":</b> "+esc(kwDesc(s.n,m.cat))+"</i></div>"}).join("");
+  return(ks.length?'<div class="chips">'+ks.map(function(s){return'<span class="chip">'+esc(s.n)+(s.t?" ("+s.t+"+)":"")+"</span>"}).join("")+"</div>":"")+(m.fx?'<div class="kfx">'+fxHtml(m.fx)+"</div>":"")+kd;
+}
+function offenseInfo(mv){return'<div class="dcol" style="margin:8px 0"><b>Offense jutsu: '+esc(mv.name)+'</b> <span class="jm">'+mv.cat+" | "+costText(mv.cat)+"</span>"+(moveInfo(mv)||'<p class="note">No effects or keywords on this jutsu.</p>')+"</div>"}
+function duelParts(){
+  var a=cget(duel.a);if(!a)return null;
+  var mv=(a.moves||[]).filter(function(x){return x.id===duel.j})[0],t=duel.t?cget(duel.t):null;
+  var dm=t&&duel.def?(t.moves||[]).filter(function(x){return x.id===duel.def})[0]:null;
+  return{a:a,mv:mv,t:t,dm:dm,m:mOf(a)};
+}
+function supCost(cid){var n=0;duel.sup.forEach(function(s){if(s.c===cid)n+=JT.Supplementary.cost});return n}
+function reserved(c){
+  var P=duelParts(),r=supCost(c.id);
+  if(c.id===P.a.id)r+=JT[P.mv.cat].cost;
+  if(P.dm&&c.id===P.t.id)r+=JT.Defense.cost;
+  return r;
+}
+function kitHtml(t,pickable){
+  var mv=t.moves||[];
+  if(!mv.length)return'<p class="note">'+esc(t.name)+" has no jutsu.</p>";
+  var dOk=pickable?t.ck-supCost(t.id)>=JT.Defense.cost:false,sOk=pickable?t.ck-reserved(t)>=JT.Supplementary.cost:false;
+  return'<div class="kit"><h4>'+esc(t.name)+"\u2019s full kit</h4>"+mv.map(function(m){
+    var isD=m.cat==="Defense",isS=m.cat==="Supplementary",sel=pickable&&isD&&duel.def===m.id,btn="";
+    if(pickable&&isD)btn='<button type="button" class="small'+(sel?" primary":"")+'" data-d="defpick" data-j="'+m.id+'"'+(dOk||sel?"":" disabled")+">"+(sel?"Chosen: defending with this":dOk?"Defend with this":"Not enough Chakra")+"</button>";
+    else if(pickable&&isS)btn='<button type="button" class="small" data-d="suppick" data-c="'+t.id+'" data-j="'+m.id+'"'+(sOk?"":" disabled")+">"+(sOk?"Use this supplementary":"Not enough Chakra")+"</button>";
+    return'<div class="kitm'+(sel?" sel":"")+'"><div class="kh"><b>'+esc(m.name)+'</b><span class="jm">'+m.cat+" | "+costText(m.cat)+"</span>"+btn+"</div>"+moveInfo(m)+"</div>";
+  }).join("")+"</div>";
+}
+function sideUsers(side){var P=duelParts(),ref=side==="a"?P.a:P.t;return chars.filter(function(c){return c.mn===ref.mn&&c.side===ref.side&&c.hp>0})}
+function supPanel(side){
+  var P=duelParts(),sc=JT.Supplementary.cost,label=side==="a"?"Attacker side":"Defender side";
+  var opts=sideUsers(side).map(function(c){
+    var sups=(c.moves||[]).filter(function(m){return m.cat==="Supplementary"});if(!sups.length)return"";
+    var ok=c.ck-reserved(c)>=sc;
+    return'<optgroup label="'+esc(c.name)+(c.id===P.a.id?" (attacker)":c.id===P.t.id?" (defender)":" (ally)")+'">'+sups.map(function(m){return'<option value="'+c.id+"|"+m.id+'"'+(ok?"":" disabled")+">"+esc(m.name)+" ("+sc+" Chakra"+(ok?"":", not enough Chakra")+")</option>"}).join("")+"</optgroup>";
+  }).join("");
+  var list=duel.sup.map(function(s,i){
+    if(s.s!==side)return"";
+    var c=cget(s.c),m=c&&(c.moves||[]).filter(function(x){return x.id===s.j})[0];if(!m)return"";
+    return'<div class="kitm"><div class="kh"><b>'+esc(c.name)+": "+esc(m.name)+'</b><span class="jm">Supplementary | '+sc+' Chakra</span><button type="button" class="small" data-d="suprm" data-i="'+i+'">Remove</button></div>'+moveInfo(m)+"</div>";
+  }).join("");
+  return'<div class="dcol"><b>'+label+": supplementary jutsu</b><p class=\"note\">"+(side==="a"?"The attacker or an ally on their side can interject with a supplementary jutsu.":"The defender or an ally on their side can aid the defense with a supplementary jutsu.")+"</p>"
+  +(opts?'<div class="ctl"><select id="sup'+side+'" aria-label="'+label+' supplementary jutsu"><option value="">Choose a character and jutsu...</option>'+opts+'</select><button type="button" class="small" data-d="supadd" data-s="'+side+'">Add</button></div>':'<p class="note">Nobody on this side has a Supplementary jutsu.</p>')
+  +list+"</div>";
+}
+function openDuel(c,mv){
+  var others=chars.filter(function(x){return x.mn===c.mn&&x.id!==c.id&&x.hp>0});
+  if(!others.length){flash("emsg","No targets available. Deploy an opposing character first.");return}
+  duel={a:c.id,j:mv.id,t:"",def:"",stage:"target",ot:undefined,dt:undefined,apply:{},sup:[]};
+  renderDuel();$("duel").showModal();
+}
+function renderDuel(){
+  var P=duelParts();if(!P||!P.mv){$("duel").close();return}
+  var a=P.a,mv=P.mv,t=P.t,h="";
+  if(duel.stage==="target"){
+    var others=chars.filter(function(x){return x.mn===a.mn&&x.id!==a.id&&x.hp>0});
+    var opp=others.filter(function(x){return x.side!==a.side}),ally=others.filter(function(x){return x.side===a.side});
+    var opt=function(x){return'<option value="'+x.id+'"'+(duel.t===x.id?" selected":"")+">"+esc(x.name)+" ("+x.hp+" HP)</option>"};
+    var sel='<select id="dtarget" aria-label="Choose a target"><option value="">Choose a target...</option>'+(opp.length?'<optgroup label="Opponents">'+opp.map(opt).join("")+"</optgroup>":"")+(ally.length?'<optgroup label="Same side">'+ally.map(opt).join("")+"</optgroup>":"")+"</select>";
+    h='<h2>'+esc(a.name)+" uses "+esc(mv.name)+"</h2><p class=\"note\">Choose who the attack is aimed at. Both fighters then take center stage.</p>"
+    +'<div class="duelrow">'+fighterCard(a,"atk",JT.Offense.cost)+'<div class="vs">VS</div><div class="fighter def">'+sel+'<div id="dprev" style="margin-top:10px">'+(t?fighterCard(t,"def",0)+kitHtml(t,false):"")+"</div></div></div>"
+    +offenseInfo(mv)+'<p id="dmsg" class="note" role="status"></p><div class="dacts"><button type="button" data-d="cancel">Cancel</button><button type="button" class="primary" data-d="face">Face off</button></div>';
+  }else{
+    var no=JT[mv.cat].dice,nd=JT.Defense.dice,hasDef=(t.moves||[]).some(function(x){return x.cat==="Defense"});
+    h='<h2>'+esc(a.name)+" attacks "+esc(t.name)+" with "+esc(mv.name)+"</h2>"
+    +'<div class="duelrow">'+fighterCard(a,"atk",reserved(a))+'<div class="vs">VS</div>'+fighterCard(t,"def",reserved(t))+"</div>"+offenseInfo(mv)
+    +'<div class="dcol"><b>'+esc(t.name)+"\u2019s defense</b> "+(hasDef?'<span class="jm">Pick a Defense jutsu from the kit below, use a Supplementary jutsu, or defend with nothing.</span>':'<span class="jm">No Defense jutsu in this kit.</span>')
+    +'<div style="margin:8px 0"><button type="button" class="small'+(P.dm?"":" primary")+'" data-d="defpick" data-j="">'+(P.dm?"No defense jutsu":"Chosen: no defense jutsu")+"</button></div>"+kitHtml(t,true)+"</div>"
+    +'<div class="dgrid">'+supPanel("a")+supPanel("d")+"</div>"
+    +'<div class="dgrid"><div class="dcol"><label><b>'+esc(a.name)+"\u2019s offense total</b> <small>(roll "+no+"d12 and add them up: "+no+" to "+12*no+")</small><input type=\"number\" id=\"offtot\" class=\"dtot\" min=\""+no+'" max="'+12*no+'"></label></div>'
+    +(P.dm?'<div class="dcol"><label><b>'+esc(t.name)+"\u2019s defense total</b> <small>(roll "+nd+"d12 and add them up: "+nd+" to "+12*nd+")</small><input type=\"number\" id=\"deftot\" class=\"dtot\" min=\""+nd+'" max="'+12*nd+'"></label></div>':'<div class="dcol"><b>No defense jutsu</b><p class="note">'+esc(t.name)+" takes the full offense total.</p></div>")+"</div>"
+    +'<div class="calc" id="dcalc"></div><div id="dstat"></div><p id="dmsg" class="note" role="status"></p>'
+    +'<div class="dacts"><button type="button" data-d="cancel">Cancel (no Chakra spent)</button><button type="button" class="primary" id="dresolve" data-d="resolve" disabled>Resolve damage</button></div>';
+  }
+  $("duelbody").innerHTML=h;
+  if(duel.stage==="arena"){
+    if($("offtot")&&duel.ot!==undefined)$("offtot").value=duel.ot;
+    if($("deftot")&&duel.dt!==undefined)$("deftot").value=duel.dt;
+    updateDuelCalc();
+  }
+}
+function addSup(cid,j,side){
+  var c=cget(cid),m=c&&(c.moves||[]).filter(function(x){return x.id===j})[0];if(!c||!m)return;
+  if(c.ck-reserved(c)<JT.Supplementary.cost){$("dmsg").textContent=c.name+" does not have enough Chakra for another supplementary jutsu.";return}
+  duel.sup.push({c:cid,j:j,s:side});renderDuel();
+}
+function updateDuelCalc(){
+  var P=duelParts();if(!P||duel.stage!=="arena"||!P.t)return;
+  var no=JT[P.mv.cat].dice,nd=JT.Defense.dice,okO=okTot(duel.ot,no),okD=P.dm?okTot(duel.dt,nd):true;
+  var O=okO?duel.ot:0,D=P.dm&&okD?duel.dt:0,dmg=Math.max(0,O-D),total=dmg+AUTO,ready=okO&&okD;
+  var h=ready?"<b>"+O+"</b> offense"+(P.dm?" &minus; <b>"+D+"</b> defense":"")+" = <b>"+dmg+"</b> + <b>"+AUTO+" automatic</b> = <b>"+total+" damage</b>"+(P.dm&&O<=D?" (the defense holds, only the automatic damage lands)":""):"Enter the total"+(P.dm?"s":"")+" from your physical dice to see the damage.";
+  if(duel.ot!==undefined&&!okO)h+="<p>The offense total must be a whole number from "+no+" to "+12*no+".</p>";
+  if(P.dm&&duel.dt!==undefined&&!okD)h+="<p>The defense total must be a whole number from "+nd+" to "+12*nd+".</p>";
+  var stat="";
+  if(ready){
+    var tr=triggered(P.mv,O),ks=kwSlots(P.mv),on=ks.filter(function(q){return !q.t||O>=q.t}),off=ks.filter(function(q){return q.t&&O<q.t});
+    if(tr.length)h+="<p>Offense effects: "+esc(tr.join(" | "))+"</p>";
+    if(on.length)h+="<p>Offense keywords: "+esc(on.map(function(q){return q.n}).join(", "))+"</p>";
+    if(off.length)h+="<p>Locked: "+esc(off.map(function(q){return q.n+" (needs "+q.t+"+)"}).join(", "))+"</p>";
+    if(P.dm){
+      var dtr=triggered(P.dm,D),dks=kwSlots(P.dm),don=dks.filter(function(q){return !q.t||D>=q.t}),doff=dks.filter(function(q){return q.t&&D<q.t});
+      if(dtr.length)h+="<p>Defense effects: "+esc(dtr.join(" | "))+"</p>";
+      if(don.length)h+="<p>Defense keywords: "+esc(don.map(function(q){return q.n}).join(", "))+"</p>";
+      if(doff.length)h+="<p>Defense locked: "+esc(doff.map(function(q){return q.n+" (needs "+q.t+"+)"}).join(", "))+"</p>";
+    }
+    var names=on.map(function(q){return q.n});
+    duel.sup.forEach(function(s){
+      var c=cget(s.c),m=c&&(c.moves||[]).filter(function(x){return x.id===s.j})[0];if(!m)return;
+      h+="<p>Supplementary ("+(s.s==="a"?"attacker side":"defender side")+"): "+esc(c.name+" uses "+m.name)+" (effects are resolved by hand)</p>";
+      if(s.s==="a")kwSlots(m).forEach(function(q){names.push(q.n)});
+    });
+    names.forEach(function(n){
+      var sn=allStatus().filter(function(s){return s.toLowerCase()===n.toLowerCase()})[0];
+      if(sn&&stat.indexOf('data-s="'+esc(sn)+'"')<0){if(duel.apply[sn]===undefined)duel.apply[sn]=true;stat+='<label class="inl"><input type="checkbox" class="dst" data-s="'+esc(sn)+'" style="width:auto"'+(duel.apply[sn]?" checked":"")+"> Apply "+esc(sn)+" to "+esc(P.t.name)+"</label> "}
+    });
+  }
+  $("dcalc").innerHTML=h;$("dstat").innerHTML=stat;$("dresolve").disabled=!ready;
+}
+function resolveDuel(){
+  var P=duelParts();if(!P||!P.t)return;
+  var a=P.a,t=P.t,mv=P.mv,dm=P.dm,m=P.m,no=JT[mv.cat].dice;
+  if(!okTot(duel.ot,no)||(dm&&!okTot(duel.dt,JT.Defense.dice)))return;
+  var O=duel.ot,D=dm?duel.dt:0,costA=JT[mv.cat].cost,costD=dm?JT.Defense.cost:0,sc=JT.Supplementary.cost,dmg=Math.max(0,O-D),total=dmg+AUTO;
+  var users={};users[a.id]=a;users[t.id]=t;duel.sup.forEach(function(s){var c=cget(s.c);if(c)users[c.id]=c});
+  var short=Object.keys(users).filter(function(id){return users[id].ck<reserved(users[id])})[0];
+  if(short){$("dmsg").textContent=users[short].name+" no longer has enough Chakra for everything chosen.";return}
+  a.ck-=costA;if(dm)t.ck-=costD;
+  var out=[mv.name+": spent "+costA+" Chakra on "+t.name+". Offense total "+O];
+  out.push(dm?t.name+" defends with "+dm.name+". Defense total "+D:t.name+" has no defense jutsu");
+  duel.sup.forEach(function(s){
+    var c=cget(s.c),sm=c&&(c.moves||[]).filter(function(x){return x.id===s.j})[0];if(!sm)return;
+    c.ck-=sc;out.push((s.s==="a"?"Attacker side":"Defender side")+" supplementary: "+c.name+" uses "+sm.name+" ("+sc+" Chakra)");
+    if(m)logTo(m,c.name+" interjects with "+sm.name+" ("+(s.s==="a"?"attacker side":"defender side")+").","jutsu",sm.name,{who:c.name,ck:sc});
+  });
+  out.push("Damage: "+O+(dm?" - "+D:"")+" = "+dmg+", plus "+AUTO+" automatic = "+total);
+  var tr=triggered(mv,O);if(tr.length)out.push("Effects: "+tr.join(" | "));
+  var ks=kwSlots(mv),on=ks.filter(function(q){return !q.t||O>=q.t});
+  if(on.length)out.push("Keywords: "+on.map(function(q){return q.n}).join(", "));
+  lastRoll[a.id]=out;
+  if(m){
+    logTo(m,a.name+" uses "+mv.name+" on "+t.name+": offense "+O+(dm?", "+t.name+" defends with "+dm.name+" ("+D+")":", no defense")+". "+dmg+" damage plus "+AUTO+" automatic.","jutsu",mv.name,{who:a.name,ck:costA});
+    if(dm)logTo(m,t.name+" spends "+costD+" Chakra on "+dm.name+".","jutsu",dm.name,{who:t.name,ck:costD});
+  }
+  var dropped=applyDamage(t,m,total,"Jutsu damage ("+mv.name+": "+dmg+" plus "+AUTO+" automatic)");
+  Object.keys(duel.apply).forEach(function(s){
+    if(duel.apply[s]){t.st=t.st||[];if(t.st.indexOf(s)<0){t.st.push(s);if(m)logTo(m,t.name+" is hit with "+s+".","sys")}}
+  });
+  cpersist();duel=null;$("duel").close();renderChars();
+  flash("emsg",a.name+" hits "+t.name+" for "+total+" damage ("+dmg+" from the clash plus "+AUTO+" automatic)."+(dropped?" "+t.name+" is in Death Saving Mode!":""));
+}
+$("duel").addEventListener("close",function(){duel=null});
+$("duel").onclick=function(ev){
+  var b=ev.target.closest("button");if(!b||!duel)return;var d=b.dataset.d;
+  if(d==="cancel"){$("duel").close();return}
+  if(d==="face"){if(!duel.t){$("dmsg").textContent="Choose a target first.";return}duel.stage="arena";renderDuel();return}
+  if(d==="defpick"){duel.def=b.dataset.j||"";duel.dt=undefined;renderDuel();return}
+  if(d==="suppick"){addSup(b.dataset.c,b.dataset.j,"d");return}
+  if(d==="supadd"){var v=$("sup"+b.dataset.s).value;if(!v)return;var p=v.split("|");addSup(p[0],p[1],b.dataset.s);return}
+  if(d==="suprm"){duel.sup.splice(+b.dataset.i,1);renderDuel();return}
+  if(d==="resolve")resolveDuel();
+};
+$("duel").onchange=function(ev){
+  var t=ev.target;if(!duel)return;
+  if(t.id==="dtarget"){duel.t=t.value;var c=duel.t?cget(duel.t):null;$("dprev").innerHTML=c?fighterCard(c,"def",0)+kitHtml(c,false):""}
+  else if(t.classList&&t.classList.contains("dst"))duel.apply[t.dataset.s]=t.checked;
+};
+$("duel").oninput=function(ev){
+  var t=ev.target;if(!duel)return;
+  if(t.id==="offtot"){var v=parseInt(t.value,10);duel.ot=isNaN(v)?undefined:v;updateDuelCalc()}
+  else if(t.id==="deftot"){var w=parseInt(t.value,10);duel.dt=isNaN(w)?undefined:w;updateDuelCalc()}
+};
+
+/* card actions */
+function cardAction(ev,isM){
+  var b=ev.target.closest("button");if(!b)return;
+  var a=b.dataset.a,list=isM?chars:roster,c=list.filter(function(x){return x.id===b.dataset.id})[0];if(!c)return;
+  var fm=isM?"emsg":"cmsg",m=isM?mOf(c):null;
+  if(isM&&epd().ended){flash("emsg","This episode is complete, so its characters are locked.");return}
+  if(a==="adj"){
+    var k=b.dataset.k,mx=c[k==="hp"?"maxHp":"maxCk"],was=c[k];c[k]=clamp(c[k]+parseInt(b.dataset.d,10),mx);
+    if(m&&c[k]!==was){
+      var diff=c[k]-was,sg=(diff>0?"+":"")+diff;
+      if(k==="hp"){logTo(m,c.name+": HP "+was+" to "+c.hp+" ("+sg+").","hp","",{who:c.name,hp:diff});if(was>0&&c.hp<=0)logTo(m,c.name+" drops to 0 HP and enters Death Saving Mode.","hp","",{who:c.name})}
+      else logTo(m,c.name+": Chakra "+was+" to "+c.ck+" ("+sg+").","ck","",{who:c.name,ck:Math.max(0,-diff)});
+    }
+    cpersist();renderChars();if(k==="hp"&&was>0&&c.hp<=0)flash(fm,c.name+" is in Death Saving Mode!");
+  }
+  else if(a==="stat"){
+    var s=b.dataset.s,on=c.st||(c.st=[]),ix=on.indexOf(s);
+    if(ix<0)on.push(s);else on.splice(ix,1);
+    if(m)logTo(m,ix<0?c.name+" is hit with "+s+".":c.name+" is no longer affected by "+s+".","sys");
+    cpersist();renderChars();
+  }
+  else if(a==="ko"||a==="uko"){
+    if(c.hp<=0)return;
+    var drop=applyDamage(c,m,10,a==="uko"?"Ultimate Jutsu KO":"KO");
+    if(a==="uko"){ultNote={id:c.id,name:c.name};if(m)logTo(m,"Reminder for "+c.name+": subtract the difference between the offense and defense die results for extra damage.","sys")}
+    cpersist();renderChars();
+    flash(fm,drop?c.name+" is in Death Saving Mode!":c.name+" takes 10 damage"+(a==="uko"?" from an Ultimate Jutsu KO. Remember to subtract the difference between the offense and defense die results for extra damage.":"."));
+  }
+  else if(a==="rest"){c.hp=c.maxHp;c.ck=c.maxCk;c.st=[];if(m)logTo(m,c.name+" is fully restored and cleared of status conditions.","hp");cpersist();renderChars()}
+  else if(a==="edit")openC(c,isM?"mission":"roster");
+  else if(a==="rem"||a==="rdel"){
+    if(b.dataset.armed){if(a==="rem"){if(m)logTo(m,c.name+" leaves the mission.","sys");chars=chars.filter(function(x){return x.id!==c.id});cpersist()}else{roster=roster.filter(function(x){return x.id!==c.id});rpersist()}renderChars();renderMap()}
+    else{b.dataset.armed=1;b.textContent="Confirm";setTimeout(function(){b.dataset.armed="";if(b.isConnected)b.textContent=a==="rem"?"Remove from mission":"Delete"},3000)}
+  }
+  else if(a==="dsroll"||a==="dsok"||a==="dsfail"){
+    syncDss(c);var d=c.ds,okk,st0=dssState(c);
+    if(a==="dsroll"){var rr=1+Math.floor(Math.random()*10);okk=rr>=dssT;c.dsLast="Rolled D10: "+rr+(okk?" - success":" - failure")}
+    else{okk=a==="dsok";c.dsLast=""}
+    if(okk)d.ok=Math.min(3,(d.ok||0)+1);else d.fail=Math.min(3,(d.fail||0)+1);
+    if(m){
+      logTo(m,c.name+" death save: "+(c.dsLast||(okk?"success":"failure"))+" ("+d.ok+" successes, "+d.fail+" failures).","hp");
+      var st1=dssState(c);
+      if(st1!==st0&&st1==="dead")logTo(m,c.name+" has died.","hp","",{who:c.name,dead:true});
+      else if(st1!==st0&&st1==="stable")logTo(m,c.name+" is stabilized.","hp");
+    }
+    cpersist();renderChars();
+  }
+  else if(a==="use"){
+    var mv=(c.moves||[]).filter(function(x){return x.id===b.dataset.j})[0];if(!mv)return;
+    var t=JT[mv.cat];if(c.ck<t.cost||c.hp<=0)return;
+    if(isM&&mv.cat==="Offense"&&m){openDuel(c,mv);return}
+    c.ck-=t.cost;var out=[mv.name+": spent "+t.cost+" Chakra"],sum=Infinity;
+    if(t.dice){var rl=[],tot=0,n,v;for(n=0;n<t.dice;n++){v=1+Math.floor(Math.random()*12);rl.push(v);tot+=v}sum=tot;out[0]+=". Rolled "+t.dice+"d12 ["+rl.join(", ")+"] = "+tot}
+    var tr=triggered(mv,sum);if(tr.length)out.push("Effects: "+tr.join(" | "));
+    var ks=kwSlots(mv),on2=ks.filter(function(q){return !q.t||sum>=q.t}),off=ks.filter(function(q){return q.t&&sum<q.t});
+    if(on2.length)out.push("Keywords: "+on2.map(function(q){return q.n}).join(", "));
+    if(off.length)out.push("Locked: "+off.map(function(q){return q.n+" (needs "+q.t+"+)"}).join(", "));
+    lastRoll[c.id]=out;
+    if(m)logTo(m,c.name+" uses "+out.join(" | "),"jutsu",mv.name,{who:c.name,ck:t.cost});
+    cpersist();renderChars();
+  }
+}
+function cardChange(ev){
+  var t=ev.target;if(!t.classList.contains("cur"))return;
+  var c=chars.filter(function(x){return x.id===t.dataset.id})[0];if(!c)return;var k=t.dataset.k;
+  if(epd().ended){flash("emsg","This episode is complete, so its characters are locked.");renderChars();return}
+  var was=c[k],m=mOf(c);c[k]=clamp(parseInt(t.value,10)||0,c[k==="hp"?"maxHp":"maxCk"]);
+  if(m&&c[k]!==was){
+    var diff=c[k]-was,sg=(diff>0?"+":"")+diff;
+    if(k==="hp"){logTo(m,c.name+": HP "+was+" to "+c.hp+" ("+sg+").","hp","",{who:c.name,hp:diff});if(was>0&&c.hp<=0)logTo(m,c.name+" drops to 0 HP and enters Death Saving Mode.","hp","",{who:c.name})}
+    else logTo(m,c.name+": Chakra "+was+" to "+c.ck+" ("+sg+").","ck","",{who:c.name,ck:Math.max(0,-diff)});
+  }
+  cpersist();renderChars();if(k==="hp"&&was>0&&c.hp<=0)flash("emsg",c.name+" is in Death Saving Mode!");
+}
+$("chars").onclick=function(ev){cardAction(ev,false)};
+
+/* ---- ninja map ---- */
+var CELL=50,GW=40,GH=28;
+var mapS={tokens:[],turn:1,dice:"1d12",zoom:.6,grid:true,enf:true};
+var VPOS={v1:[30,19],v2:[33,13],v3:[26,12],v4:[31,4],v5:[7,19],v6:[8,6]};
+var VCOL={v1:"#f26a0f",v2:"#1f6fd6",v3:"#2e9e5b",v4:"#8e44ad",v5:"#d4a017",v6:"#6b7280",v7:"#991b1b"};
+function loadMap(){try{var r=localStorage.getItem(MAPK);if(r){var o=JSON.parse(r);if(o&&Array.isArray(o.tokens))mapS=Object.assign(mapS,o)}}catch(e){}}
+function saveMap(){sv(MAPK,mapS)}
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function blob(cx,cy,rx,ry,R){
+  var n=18,p=[],i,a,r,mid=function(u,w){return[(u[0]+w[0])/2,(u[1]+w[1])/2]};
+  for(i=0;i<n;i++){a=i/n*6.2832;r=.84+.26*R();p.push([cx+Math.cos(a)*rx*r,cy+Math.sin(a)*ry*r])}
+  var m0=mid(p[n-1],p[0]),d="M"+m0[0].toFixed(0)+" "+m0[1].toFixed(0);
+  for(i=0;i<n;i++){var q=p[i],m=mid(q,p[(i+1)%n]);d+="Q"+q[0].toFixed(0)+" "+q[1].toFixed(0)+" "+m[0].toFixed(0)+" "+m[1].toFixed(0)}
+  return d+"Z";
+}
+function buildMap(){
+  var R=rng(11),W=GW*CELL,H=GH*CELL,s="",i,x,y,v;
+  var vp=Object.keys(VPOS).map(function(k){return[VPOS[k][0]*CELL+25,VPOS[k][1]*CELL+25]});
+  var clear=function(px,py){return !vp.some(function(q){return Math.hypot(q[0]-px,q[1]-py)<80})};
+  var pick=function(cx,cy,rx,ry){var px,py,t=0;do{px=cx+(R()*2-1)*rx;py=cy+(R()*2-1)*ry;t++}while((Math.pow((px-cx)/rx,2)+Math.pow((py-cy)/ry,2)>1||!clear(px,py))&&t<30);return[px,py]};
+  var regs=[[900,700,420,380,"#b5c27e"],[1350,820,470,400,"#5aa05c"],[330,980,340,330,"#e2c47f"],[430,330,390,290,"#a39a8f"],[1500,270,400,240,"#98a6c2"]].map(function(r){return{p:blob(r[0],r[1],r[2],r[3],R),f:r[4]}});
+  s+='<rect width="'+W+'" height="'+H+'" fill="#2f78b7"/>';
+  for(i=0;i<110;i++){x=R()*W;y=R()*H;s+='<path d="M'+x.toFixed(0)+" "+y.toFixed(0)+'q12 -8 24 0t24 0" stroke="#6aa8da" stroke-width="2" fill="none" opacity=".6"/>'}
+  regs.forEach(function(r){s+='<path d="'+r.p+'" fill="#ebdfb2" stroke="#ebdfb2" stroke-width="26" stroke-linejoin="round"/>'});
+  regs.forEach(function(r){s+='<path d="'+r.p+'" fill="'+r.f+'"/>'});
+  s+='<path d="M1180 440C1150 560 1250 640 1180 760S1050 900 1120 1060S1250 1250 1180 1420" stroke="#4b9be0" stroke-width="9" fill="none" stroke-linecap="round"/>';
+  s+='<path d="M560 420C640 520 700 560 720 700S820 860 760 1000S800 1300 840 1400" stroke="#4b9be0" stroke-width="9" fill="none" stroke-linecap="round"/>';
+  s+='<ellipse cx="1000" cy="560" rx="90" ry="55" fill="#4b9be0" stroke="#3b82c4" stroke-width="4"/>';
+  var greens=["#2f7a3d","#3b8f49","#2a6b36"];
+  for(i=0;i<260;i++){v=pick(1350,820,400,330);s+='<circle cx="'+v[0].toFixed(0)+'" cy="'+v[1].toFixed(0)+'" r="'+(7+R()*5).toFixed(0)+'" fill="'+greens[i%3]+'"/>'}
+  for(i=0;i<40;i++){v=pick(900,700,340,300);s+='<circle cx="'+v[0].toFixed(0)+'" cy="'+v[1].toFixed(0)+'" r="'+(5+R()*4).toFixed(0)+'" fill="#7f9a55"/>'}
+  for(i=0;i<90;i++){v=pick(330,980,260,250);s+='<path d="M'+v[0].toFixed(0)+" "+v[1].toFixed(0)+'q18 -14 36 0" stroke="#c9a45a" stroke-width="4" fill="none" stroke-linecap="round"/>'}
+  var peaks=function(cx,cy,rx,ry,n,body,snow){for(var j=0;j<n;j++){var q=pick(cx,cy,rx,ry),h=26+R()*16;s+='<polygon points="'+q[0].toFixed(0)+","+(q[1]-h).toFixed(0)+" "+(q[0]-h*.8).toFixed(0)+","+(q[1]+h*.4).toFixed(0)+" "+(q[0]+h*.8).toFixed(0)+","+(q[1]+h*.4).toFixed(0)+'" fill="'+body+'"/><polygon points="'+q[0].toFixed(0)+","+(q[1]-h).toFixed(0)+" "+(q[0]-h*.26).toFixed(0)+","+(q[1]-h*.5).toFixed(0)+" "+(q[0]+h*.26).toFixed(0)+","+(q[1]-h*.5).toFixed(0)+'" fill="'+snow+'"/>'}};
+  peaks(430,330,300,210,60,"#7d746b","#e9edf2");peaks(1500,270,300,170,55,"#6e7d9c","#f4f7fc");
+  var road=function(pts){s+='<path d="M'+pts.map(function(q){return q[0]+" "+q[1]}).join("L")+'" stroke="#7a5230" stroke-width="5" stroke-dasharray="12 9" fill="none" opacity=".85" stroke-linejoin="round"/>'};
+  var c=function(k){return[VPOS[k][0]*CELL+25,VPOS[k][1]*CELL+25]};
+  road([c("v3"),c("v2")]);road([c("v3"),c("v1")]);road([c("v1"),c("v2")]);road([c("v2"),[1625,450],c("v4")]);
+  road([c("v3"),[1000,760],[700,900],c("v5")]);road([[1000,760],[800,560],c("v6")]);
+  var lab=function(t,px,py){s+='<text x="'+px+'" y="'+py+'" text-anchor="middle" font-size="58" font-weight="700" letter-spacing="6" fill="#fff" opacity=".38" font-family="Dela Gothic One,Anton,Impact,sans-serif">'+t+"</text>"};
+  lab("FIRE COUNTRY",1400,1180);lab("WIND COUNTRY",330,1250);lab("EARTH COUNTRY",430,150);lab("LIGHTNING COUNTRY",1500,90);lab("NEUTRAL PLAINS",900,820);
+  $("mstatic").innerHTML=s;
+  var g="";for(i=1;i<GW;i++)g+="M"+i*CELL+" 0V"+H;for(i=1;i<GH;i++)g+="M0 "+i*CELL+"H"+W;
+  $("mgridl").setAttribute("d",g);
+}
+function drawVillages(){
+  $("mvill").innerHTML=villages.filter(function(v){return VPOS[v.id]}).map(function(v){
+    var p=VPOS[v.id],x=p[0]*CELL+25,y=p[1]*CELL+25,col=VCOL[v.id]||"#555";
+    return'<g transform="translate('+x+" "+y+')" style="pointer-events:none"><circle r="30" fill="#fff" stroke="'+col+'" stroke-width="6"/>'
+    +'<polygon points="-14,2 0,-14 14,2" fill="'+col+'"/><rect x="-10" y="2" width="20" height="13" fill="'+col+'"/><rect x="-3" y="7" width="6" height="8" fill="#fff"/>'
+    +'<text y="56" text-anchor="middle" font-size="22" font-weight="700" fill="#fff" stroke="#10213a" stroke-width="5" paint-order="stroke" font-family="Source Sans 3,sans-serif">'+esc(v.name)+"</text></g>";
+  }).join("");
+}
+function tinfo(t){var s=(t.src==="c"?chars:roster).filter(function(x){return x.id===t.ref})[0];return s?{name:s.name,img:s.img,vid:s.vid,down:t.src==="c"&&s.hp<=0}:{name:t.name,img:"",vid:t.vid,down:false}}
+function drawTokens(){
+  $("mtok").innerHTML=mapS.tokens.map(function(t){
+    var i=tinfo(t),col=VCOL[i.vid]||"#444",ok=i.img&&/^data:image\//.test(i.img);
+    var face=ok?'<image href="'+esc(i.img)+'" x="-23" y="-23" width="46" height="46" clip-path="url(#tc)" preserveAspectRatio="xMidYMid slice"/>':'<circle r="23" fill="#fff"/><text y="9" text-anchor="middle" font-size="26" font-weight="700" fill="'+col+'" font-family="Dela Gothic One,Anton,Impact,sans-serif">'+esc((i.name||"?").charAt(0).toUpperCase())+"</text>";
+    var badge=t.moveLeft!=null?'<circle cx="20" cy="-20" r="13" fill="#f26a0f" stroke="#fff" stroke-width="2"/><text x="20" y="-14" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">'+t.moveLeft+"</text>":"";
+    return'<g class="tok" data-id="'+t.id+'" transform="translate('+(t.x*CELL+25)+" "+(t.y*CELL+25)+')"><circle r="27" fill="'+col+'"/>'+face+'<circle r="23" fill="none" stroke="'+(i.down?"#ff2d2d":"#fff")+'" stroke-width="'+(i.down?4:2)+'"/>'+badge
+    +'<text y="46" text-anchor="middle" font-size="16" font-weight="700" fill="#fff" stroke="#10213a" stroke-width="4" paint-order="stroke" font-family="Source Sans 3,sans-serif">'+esc(i.name)+"</text></g>";
+  }).join("");
+}
+function renderTokList(){
+  $("turnlbl").textContent="Turn "+mapS.turn;
+  $("toklist").innerHTML=mapS.tokens.length?mapS.tokens.map(function(t){
+    var i=tinfo(t);
+    return'<div class="trow">'+avatar({img:i.img,name:i.name},"sm")+'<div class="tin"><b>'+esc(i.name)+'</b><div class="jm">'+esc(vname(i.vid)||"No village")+tmn(t)+" | "+(t.moveLeft==null?"Not rolled this turn":"Rolled "+t.rolled+", "+t.moveLeft+" squares left")+"</div></div>"
+    +'<div class="jbtn"><button class="small" data-t="roll" data-id="'+t.id+'">Roll movement</button><button class="small danger" data-t="rm" data-id="'+t.id+'">Remove</button></div></div>';
+  }).join(""):'<p class="note">No tokens yet. Choose a character above and select Place token.</p>';
+}
+function fillTpick(){
+  var cur=$("tpick").value;
+  $("tpick").innerHTML='<option value="">Choose a character...</option>'+missionOpts()+charOptions(roster,null,"r:");
+  $("tpick").value=cur;
+}
+function applyZoom(){var z=mapS.zoom;$("map").setAttribute("width",GW*CELL*z);$("map").setAttribute("height",GH*CELL*z)}
+function renderMap(){
+  fillTpick();drawVillages();drawTokens();renderTokList();applyZoom();
+  $("mgridl").style.display=mapS.grid?"":"none";$("mgrid").checked=!!mapS.grid;$("menf").checked=!!mapS.enf;$("mdice").value=mapS.dice;
+}
+function rollDice(expr){
+  var m=/^\s*(\d+)\s*d\s*(\d+)\s*([+-]\s*\d+)?\s*$/i.exec(expr||"");if(!m)return null;
+  var n=Math.min(50,+m[1]),d=Math.max(2,+m[2]),tot=m[3]?parseInt(m[3].replace(/\s/g,""),10):0,i;
+  for(i=0;i<n;i++)tot+=1+Math.floor(Math.random()*d);return Math.max(0,tot);
+}
+function rollMove(t){
+  var i=tinfo(t);
+  if(t.moveLeft!=null){flash("mmsg",i.name+" already rolled this turn.");return}
+  var v=rollDice(mapS.dice);if(v==null){flash("mmsg","Movement dice must look like 1d12 or 2d6+1.");return}
+  t.rolled=v;t.moveLeft=v;saveMap();flash("mmsg",i.name+" rolled "+mapS.dice+" and can move "+v+" squares.");
+}
+function tok(id){return mapS.tokens.filter(function(t){return t.id===id})[0]}
+function placeToken(src,id){
+  var s=(src==="c"?chars:roster).filter(function(x){return x.id===id})[0];if(!s)return"";
+  if(mapS.tokens.some(function(t){return t.src===src&&t.ref===id}))return s.name+" already has a token.";
+  var p=VPOS[s.vid]||[20,14],n=mapS.tokens.filter(function(t){return Math.abs(t.x-p[0])<=3&&Math.abs(t.y-p[1])<=3}).length;
+  mapS.tokens.push({id:uid("t"),src:src,ref:id,name:s.name,vid:s.vid||"",x:Math.min(GW-1,p[0]+1+n%3),y:Math.min(GH-1,p[1]+1+Math.floor(n/3)%3),moveLeft:null,rolled:null});
+  saveMap();drawTokens();renderTokList();return"ok";
+}
+$("tadd").onclick=function(){
+  var v=$("tpick").value;if(!v){flash("mmsg","Choose a character first.");return}
+  var r=placeToken(v.charAt(0),v.slice(2));if(r&&r!=="ok")flash("mmsg",r);
+};
+$("toklist").onclick=function(ev){
+  var b=ev.target.closest("button");if(!b)return;var t=tok(b.dataset.id);if(!t)return;
+  if(b.dataset.t==="roll"){rollMove(t)}
+  else if(b.dataset.t==="rm"){mapS.tokens=mapS.tokens.filter(function(x){return x.id!==t.id});saveMap()}
+  drawTokens();renderTokList();
+};
+$("rollall").onclick=function(){mapS.tokens.forEach(function(t){if(t.moveLeft==null)rollMove(t)});drawTokens();renderTokList()};
+$("nextturn").onclick=function(){mapS.turn++;mapS.tokens.forEach(function(t){t.moveLeft=null;t.rolled=null});saveMap();flash("mmsg","Turn "+mapS.turn+" begins. Everyone can roll movement again.");drawTokens();renderTokList()};
+$("mdice").onchange=function(){mapS.dice=this.value.trim()||"1d12";saveMap()};
+$("menf").onchange=function(){mapS.enf=this.checked;saveMap()};
+$("mgrid").onchange=function(){mapS.grid=this.checked;$("mgridl").style.display=mapS.grid?"":"none";saveMap()};
+$("zin").onclick=function(){mapS.zoom=Math.min(1.5,+(mapS.zoom+.15).toFixed(2));applyZoom();saveMap()};
+$("zout").onclick=function(){mapS.zoom=Math.max(.3,+(mapS.zoom-.15).toFixed(2));applyZoom();saveMap()};
+var drag=null;
+function svgPt(ev){var s=$("map"),p=s.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;return p.matrixTransform(s.getScreenCTM().inverse())}
+$("map").addEventListener("pointerdown",function(ev){
+  var g=ev.target.closest(".tok");if(!g)return;var t=tok(g.dataset.id);if(!t)return;
+  ev.preventDefault();try{g.setPointerCapture(ev.pointerId)}catch(e){}
+  drag={g:g,t:t,sx:t.x,sy:t.y};g.parentNode.appendChild(g);
+});
+$("map").addEventListener("pointermove",function(ev){
+  if(!drag)return;var p=svgPt(ev);
+  drag.g.setAttribute("transform","translate("+Math.max(0,Math.min(GW*CELL,p.x))+" "+Math.max(0,Math.min(GH*CELL,p.y))+")");
+});
+function endDrag(ev){
+  if(!drag)return;var d=drag;drag=null;var p=svgPt(ev);
+  var cx=Math.max(0,Math.min(GW-1,Math.floor(p.x/CELL))),cy=Math.max(0,Math.min(GH-1,Math.floor(p.y/CELL))),cost=Math.max(Math.abs(cx-d.sx),Math.abs(cy-d.sy)),t=d.t;
+  if(cost>0){
+    if(mapS.enf&&t.moveLeft!=null&&cost>t.moveLeft)flash("mmsg","Not enough movement: that move costs "+cost+" and "+tinfo(t).name+" has "+t.moveLeft+" left.");
+    else{t.x=cx;t.y=cy;if(t.moveLeft!=null)t.moveLeft-=cost;saveMap()}
+  }
+  drawTokens();renderTokList();
+}
+$("map").addEventListener("pointerup",endDrag);
+$("map").addEventListener("pointercancel",function(){drag=null;drawTokens()});
+
+/* ---- views ---- */
+function setView(v){
+  ["camp","map","eps"].forEach(function(k){$("v-"+k).classList.toggle("hidden",k!==v)});
+  Array.prototype.forEach.call(document.querySelectorAll("[data-view]"),function(b){b.setAttribute("aria-selected",b.dataset.view===v)});
+  try{localStorage.setItem(WK,v)}catch(e){}
+  if(v==="map")renderMap();if(v==="camp")renderChars();if(v==="eps")syncWs();
+}
+Array.prototype.forEach.call(document.querySelectorAll("[data-view]"),function(b){b.onclick=function(){setView(b.dataset.view)}});
+
+chars=ld(CK);roster=ld(RK);kws=ld(KK);loadMap();loadPhase();loadEpData();loadStat();loadMissions();ensureKwIds();seedVillages();buildMap();renderVillages();renderChars();
+var startView="camp";try{startView=localStorage.getItem(WK)||"camp"}catch(e){}
+if(["camp","map","eps"].indexOf(startView)<0)startView="camp";
+setView(startView);
+load();render();syncWs();
+})();
+</script>
+</body>
+</html>
